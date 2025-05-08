@@ -1,0 +1,35 @@
+# Diretórios e arquivos do Node.js
+node_modules/            
+package-lock.json        
+
+# Ambiente
+.env                     
+#.env.*                   
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store                
+Thumbs.db                
+
+# IDEs e editores
+.vscode/                 
+.idea/                   
+*.sublime-workspace
+*.sublime-project
+
+# Arquivos temporários
+*.tmp
+*.swp                    
+*.bak                    
+*.old                    
+*.orig                   
+
+# Testes e cobertura 
+coverage/
+test-output/
+
+# rest.http
