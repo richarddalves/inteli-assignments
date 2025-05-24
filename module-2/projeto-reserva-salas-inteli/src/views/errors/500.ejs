@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="stylesheet" href="/styles/errors.css" />
+  </head>
+  <body>
+    <%- include('../partials/header') %>
+
+    <main class="container">
+      <div class="error-container">
+        <div class="error-code error-code-500">500</div>
+        <h1><%= title %></h1>
+        <p class="error-message"><%= message %></p>
+        <a href="/" class="btn btn-primary">Voltar para a página inicial</a>
+      </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </body>
+</html>

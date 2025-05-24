@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles/main.css" />
+  </head>
+  <body>
+    <%- include('../partials/header') %>
+
+    <main class="container">
+      <section class="hero">
+        <h1><%= title %></h1>
+        <p class="lead"><%= message %></p>
+        <div class="cta-buttons">
+          <a href="/documentacao" class="btn btn-primary">Ver Documentação</a>
+          <a href="/status" class="btn btn-secondary">Verificar Status</a>
+        </div>
+      </section>
+
+      <section class="features">
+        <h2>Funcionalidades Principais</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h3>Reserva de Salas</h3>
+            <p>
+              Reserve salas de estudo e cabines de forma rápida e eficiente.
+            </p>
+          </div>
+          <div class="feature-card">
+            <h3>Gestão de Usuários</h3>
+            <p>
+              Cadastro e gerenciamento de usuários com diferentes níveis de
+              acesso.
+            </p>
+          </div>
+          <div class="feature-card">
+            <h3>Disponibilidade em Tempo Real</h3>
+            <p>Verifique a disponibilidade das salas em tempo real.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </body>
+</html>
