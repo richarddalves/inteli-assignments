@@ -244,38 +244,98 @@ O sistema utiliza PostgreSQL como banco de dados relacional, com as seguintes ta
 
 ## Configuração do Banco de Dados
 
-### Supabase
+### Banco de Dados PostgreSQL
 
-O projeto utiliza o Supabase como serviço de banco de dados PostgreSQL. A configuração é feita através do arquivo `.env`:
+O sistema foi desenvolvido utilizando PostgreSQL como banco de dados relacional. A implementação atual utiliza o Supabase como serviço de banco de dados, mas o sistema é flexível e pode ser configurado para usar qualquer instância PostgreSQL, incluindo instalações locais.
+
+#### Configuração via Supabase
+
+Para usar o Supabase, configure as seguintes variáveis no arquivo `.env`:
 
 ```env
+DB_HOST=seu-projeto.supabase.co
+DB_PORT=5432
+DB_NAME=postgres
+DB_USER=postgres
+DB_PASSWORD=sua-senha
+```
+
+#### Configuração Local
+
+Para usar uma instância local do PostgreSQL, configure as variáveis no arquivo `.env`:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=nome_do_banco
 DB_USER=seu_usuario
-DB_HOST=seu_host
-DB_DATABASE=seu_banco
 DB_PASSWORD=sua_senha
-DB_PORT=6543
-DB_SSL=true
 ```
 
-### Pool de Conexões
+O sistema utiliza a biblioteca `pg` (node-postgres) para conexão com o banco de dados, que é compatível com qualquer instância PostgreSQL padrão. A única diferença entre usar Supabase ou uma instância local está na configuração das variáveis de ambiente.
 
-O projeto utiliza um pool de conexões para melhor performance e gerenciamento de recursos:
+### Estrutura do Banco de Dados
 
-```javascript
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  ssl:
-    process.env.DB_SSL === "true"
-      ? {
-          rejectUnauthorized: false,
-        }
-      : false,
-});
-```
+1. **users**
+
+   ```sql
+   CREATE TABLE users (
+     user_id SERIAL PRIMARY KEY,
+     name VARCHAR(100) NOT NULL,
+     email VARCHAR(100) UNIQUE NOT NULL,
+     password VARCHAR(255) NOT NULL,
+     role VARCHAR(20) NOT NULL,
+     registration_number VARCHAR(20) UNIQUE NOT NULL,
+     is_active BOOLEAN DEFAULT true,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+   ```
+
+2. **room_types**
+
+   ```sql
+   CREATE TABLE room_types (
+     room_type_id SERIAL PRIMARY KEY,
+     type_name VARCHAR(50) NOT NULL UNIQUE,
+     description TEXT,
+     is_active BOOLEAN DEFAULT true,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+   ```
+
+3. **rooms**
+
+   ```sql
+   CREATE TABLE rooms (
+     room_id SERIAL PRIMARY KEY,
+     name VARCHAR(50) NOT NULL UNIQUE,
+     capacity INTEGER NOT NULL,
+     room_type_id INTEGER REFERENCES room_types(room_type_id),
+     location VARCHAR(100),
+     description TEXT,
+     is_active BOOLEAN DEFAULT true,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+   ```
+
+4. **bookings**
+
+   ```sql
+   CREATE TABLE bookings (
+     booking_id SERIAL PRIMARY KEY,
+     room_id INTEGER REFERENCES rooms(room_id),
+     user_id INTEGER REFERENCES users(user_id),
+     start_time TIMESTAMP NOT NULL,
+     end_time TIMESTAMP NOT NULL,
+     status VARCHAR(20) NOT NULL,
+     reason TEXT,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+   ```
 
 ## Estrutura do Projeto
 
