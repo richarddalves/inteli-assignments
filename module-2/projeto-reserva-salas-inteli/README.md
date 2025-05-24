@@ -58,7 +58,7 @@ DB_SSL=
 
 # Configurações do servidor
 PORT=
-NODE_ENV=
+NODE_ENV=development  # Qualquer valor diferente de test 
 ```
 
 4. **Inicialize o banco de dados**:
