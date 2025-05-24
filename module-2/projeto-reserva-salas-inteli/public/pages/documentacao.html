@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Documentação da API - Sistema de Reserva de Salas</title>
+    <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="stylesheet" href="/styles/documentacao.css" />
+  </head>
+  <body>
+    <header class="main-header">
+      <nav class="nav-container">
+        <div class="logo">
+          <a href="/">Reserva de Salas</a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="/">Início</a></li>
+          <li><a href="/documentacao">Documentação</a></li>
+          <li><a href="/status">Status</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <header class="doc-header">
+        <h1>Documentação da API</h1>
+        <p>API RESTful para gerenciamento de reservas de salas do campus</p>
+        <div class="status online" id="apiStatus">API Online</div>
+      </header>
+
+      <div class="section">
+        <h2>Configuração do Banco de Dados</h2>
+        <p>
+          O sistema utiliza o Supabase como banco de dados PostgreSQL. A
+          configuração é feita através do arquivo <code>.env</code>:
+        </p>
+        <pre><code>DB_USER=seu_usuario
+DB_HOST=seu_host
+DB_DATABASE=seu_banco
+DB_PASSWORD=sua_senha
+DB_PORT=6543
+DB_SSL=true</code></pre>
+      </div>
+
+      <div class="section">
+        <h2>Autenticação</h2>
+        <p>
+          Atualmente, a API não requer autenticação para uso. Futuras versões
+          implementarão autenticação.
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>Endpoints de Usuários</h2>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/usuarios</span>
+          <div class="description">
+            Lista todos os usuários cadastrados no sistema.
+          </div>
+          <div class="response">
+            { "usuarios": [ { "user_id": 1, "name": "João Silva", "email":
+            "joao.silva@sou.inteli.edu.br", "registration_number": "2024001",
+            "role": "student", "is_active": true } ] }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/usuarios/:user_id</span>
+          <div class="description">Busca um usuário específico pelo ID.</div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">user_id</span> - ID do usuário (número)
+            </div>
+          </div>
+          <div class="response">
+            { "user_id": 1, "name": "João Silva", "email":
+            "joao.silva@sou.inteli.edu.br", "registration_number": "2024001",
+            "role": "student", "is_active": true }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">POST</span>
+          <span class="url">/usuarios</span>
+          <div class="description">Cria um novo usuário no sistema.</div>
+          <div class="request-body">
+            { "name": "João Silva", "email": "joao.silva@sou.inteli.edu.br",
+            "password": "senha123", "registration_number": "2024001", "role":
+            "student" }
+          </div>
+          <div class="response">
+            { "user_id": 1, "name": "João Silva", "email":
+            "joao.silva@sou.inteli.edu.br", "registration_number": "2024001",
+            "role": "student", "is_active": true }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">PUT</span>
+          <span class="url">/usuarios/:user_id</span>
+          <div class="description">
+            Atualiza os dados de um usuário existente.
+          </div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">user_id</span> - ID do usuário (número)
+            </div>
+          </div>
+          <div class="request-body">
+            { "name": "João Silva Atualizado", "email":
+            "joao.silva@sou.inteli.edu.br", "registration_number": "2024001",
+            "role": "student", "is_active": true }
+          </div>
+          <div class="response">
+            { "user_id": 1, "name": "João Silva Atualizado", "email":
+            "joao.silva@sou.inteli.edu.br", "registration_number": "2024001",
+            "role": "student", "is_active": true }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">DELETE</span>
+          <span class="url">/usuarios/:user_id</span>
+          <div class="description">Remove um usuário do sistema.</div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">user_id</span> - ID do usuário (número)
+            </div>
+          </div>
+          <div class="response">
+            { "message": "Usuário removido com sucesso" }
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Endpoints de Tipos de Sala</h2>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/tipos-sala</span>
+          <div class="description">
+            Lista todos os tipos de sala disponíveis no sistema.
+          </div>
+          <div class="response">
+            { "tipos": [ { "room_type_id": 1, "type_name": "Sala de Estudo",
+            "description": "Sala para estudo em grupo", "is_active": true } ] }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/tipos-sala/:room_type_id</span>
+          <div class="description">
+            Busca um tipo de sala específico pelo ID.
+          </div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">room_type_id</span> - ID do tipo de sala
+              (número)
+            </div>
+          </div>
+          <div class="response">
+            { "room_type_id": 1, "type_name": "Sala de Estudo", "description":
+            "Sala para estudo em grupo", "is_active": true }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">POST</span>
+          <span class="url">/tipos-sala</span>
+          <div class="description">
+            Cadastra um novo tipo de sala no sistema.
+          </div>
+          <div class="request-body">
+            { "type_name": "Sala de Estudo", "description": "Sala para estudo em
+            grupo" }
+          </div>
+          <div class="response">
+            { "room_type_id": 1, "type_name": "Sala de Estudo", "description":
+            "Sala para estudo em grupo", "is_active": true }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">PUT</span>
+          <span class="url">/tipos-sala/:room_type_id</span>
+          <div class="description">
+            Atualiza os dados de um tipo de sala existente.
+          </div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">room_type_id</span> - ID do tipo de sala
+              (número)
+            </div>
+          </div>
+          <div class="request-body">
+            { "type_name": "Sala de Estudo Atualizada", "description": "Sala
+            para estudo em grupo atualizada" }
+          </div>
+          <div class="response">
+            { "room_type_id": 1, "type_name": "Sala de Estudo Atualizada",
+            "description": "Sala para estudo em grupo atualizada", "is_active":
+            true }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">DELETE</span>
+          <span class="url">/tipos-sala/:room_type_id</span>
+          <div class="description">Remove um tipo de sala do sistema.</div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">room_type_id</span> - ID do tipo de sala
+              (número)
+            </div>
+          </div>
+          <div class="response">
+            { "message": "Tipo de sala removido com sucesso" }
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Endpoints de Salas</h2>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/salas</span>
+          <div class="description">
+            Lista todas as salas cadastradas no sistema.
+          </div>
+          <div class="response">
+            { "salas": [ { "room_id": 1, "name": "Sala 101", "capacity": 30,
+            "room_type_id": 1, "location": "Bloco A", "description": "Sala de
+            aula padrão", "is_active": true } ] }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/salas/:room_id</span>
+          <div class="description">Busca uma sala específica pelo ID.</div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">room_id</span> - ID da sala (número)
+            </div>
+          </div>
+          <div class="response">
+            { "room_id": 1, "name": "Sala 101", "capacity": 30, "room_type_id":
+            1, "location": "Bloco A", "description": "Sala de aula padrão",
+            "is_active": true }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/salas/tipo/:room_type_id</span>
+          <div class="description">
+            Lista todas as salas de um tipo específico.
+          </div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">room_type_id</span> - ID do tipo de sala
+              (número)
+            </div>
+          </div>
+          <div class="response">
+            { "salas": [ { "room_id": 1, "name": "Sala 101", "capacity": 30,
+            "room_type_id": 1, "location": "Bloco A", "description": "Sala de
+            aula padrão", "is_active": true } ] }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">POST</span>
+          <span class="url">/salas</span>
+          <div class="description">Cadastra uma nova sala no sistema.</div>
+          <div class="request-body">
+            { "name": "Sala 101", "capacity": 30, "room_type_id": 1, "location":
+            "Bloco A", "description": "Sala de aula padrão" }
+          </div>
+          <div class="response">
+            { "room_id": 1, "name": "Sala 101", "capacity": 30, "room_type_id":
+            1, "location": "Bloco A", "description": "Sala de aula padrão",
+            "is_active": true }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">PUT</span>
+          <span class="url">/salas/:room_id</span>
+          <div class="description">
+            Atualiza os dados de uma sala existente.
+          </div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">room_id</span> - ID da sala (número)
+            </div>
+          </div>
+          <div class="request-body">
+            { "name": "Sala 101 Atualizada", "capacity": 35, "room_type_id": 1,
+            "location": "Bloco A", "description": "Sala de aula padrão
+            atualizada", "is_active": true }
+          </div>
+          <div class="response">
+            { "room_id": 1, "name": "Sala 101 Atualizada", "capacity": 35,
+            "room_type_id": 1, "location": "Bloco A", "description": "Sala de
+            aula padrão atualizada", "is_active": true }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">DELETE</span>
+          <span class="url">/salas/:room_id</span>
+          <div class="description">Remove uma sala do sistema.</div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">room_id</span> - ID da sala (número)
+            </div>
+          </div>
+          <div class="response">{ "message": "Sala removida com sucesso" }</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Endpoints de Reservas</h2>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/reservas</span>
+          <div class="description">
+            Lista todas as reservas cadastradas no sistema.
+          </div>
+          <div class="response">
+            { "reservas": [ { "booking_id": 1, "room_id": 1, "user_id": 1,
+            "start_time": "2024-03-20T10:00:00Z", "end_time":
+            "2024-03-20T12:00:00Z", "status": "reserved", "reason": "Aula de
+            Programação" } ] }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/reservas/:booking_id</span>
+          <div class="description">Busca uma reserva específica pelo ID.</div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">booking_id</span> - ID da reserva
+              (número)
+            </div>
+          </div>
+          <div class="response">
+            { "booking_id": 1, "room_id": 1, "user_id": 1, "start_time":
+            "2024-03-20T10:00:00Z", "end_time": "2024-03-20T12:00:00Z",
+            "status": "reserved", "reason": "Aula de Programação" }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/reservas/usuario/:user_id</span>
+          <div class="description">
+            Lista todas as reservas de um usuário específico.
+          </div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">user_id</span> - ID do usuário (número)
+            </div>
+          </div>
+          <div class="response">
+            { "reservas": [ { "booking_id": 1, "room_id": 1, "user_id": 1,
+            "start_time": "2024-03-20T10:00:00Z", "end_time":
+            "2024-03-20T12:00:00Z", "status": "reserved", "reason": "Aula de
+            Programação" } ] }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">GET</span>
+          <span class="url">/reservas/sala/:room_id</span>
+          <div class="description">
+            Lista todas as reservas de uma sala específica.
+          </div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">room_id</span> - ID da sala (número)
+            </div>
+          </div>
+          <div class="response">
+            { "reservas": [ { "booking_id": 1, "room_id": 1, "user_id": 1,
+            "start_time": "2024-03-20T10:00:00Z", "end_time":
+            "2024-03-20T12:00:00Z", "status": "reserved", "reason": "Aula de
+            Programação" } ] }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">POST</span>
+          <span class="url">/reservas</span>
+          <div class="description">Cria uma nova reserva no sistema.</div>
+          <div class="request-body">
+            { "room_id": 1, "user_id": 1, "start_time": "2024-03-20T10:00:00Z",
+            "end_time": "2024-03-20T12:00:00Z", "reason": "Aula de Programação"
+            }
+          </div>
+          <div class="response">
+            { "booking_id": 1, "room_id": 1, "user_id": 1, "start_time":
+            "2024-03-20T10:00:00Z", "end_time": "2024-03-20T12:00:00Z",
+            "status": "reserved", "reason": "Aula de Programação" }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">PUT</span>
+          <span class="url">/reservas/:booking_id</span>
+          <div class="description">
+            Atualiza os dados de uma reserva existente.
+          </div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">booking_id</span> - ID da reserva
+              (número)
+            </div>
+          </div>
+          <div class="request-body">
+            { "room_id": 1, "user_id": 1, "start_time": "2024-03-20T14:00:00Z",
+            "end_time": "2024-03-20T16:00:00Z", "reason": "Aula de Programação
+            Atualizada", "status": "approved" }
+          </div>
+          <div class="response">
+            { "booking_id": 1, "room_id": 1, "user_id": 1, "start_time":
+            "2024-03-20T14:00:00Z", "end_time": "2024-03-20T16:00:00Z",
+            "status": "approved", "reason": "Aula de Programação Atualizada" }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">PATCH</span>
+          <span class="url">/reservas/:booking_id/status</span>
+          <div class="description">
+            Atualiza apenas o status de uma reserva.
+          </div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">booking_id</span> - ID da reserva
+              (número)
+            </div>
+          </div>
+          <div class="request-body">{ "status": "approved" }</div>
+          <div class="response">
+            { "booking_id": 1, "room_id": 1, "user_id": 1, "start_time":
+            "2024-03-20T14:00:00Z", "end_time": "2024-03-20T16:00:00Z",
+            "status": "approved", "reason": "Aula de Programação Atualizada" }
+          </div>
+        </div>
+
+        <div class="endpoint">
+          <span class="method">DELETE</span>
+          <span class="url">/reservas/:booking_id</span>
+          <div class="description">Remove uma reserva do sistema.</div>
+          <div class="params">
+            <div class="param">
+              <span class="param-name">booking_id</span> - ID da reserva
+              (número)
+            </div>
+          </div>
+          <div class="response">
+            { "message": "Reserva removida com sucesso" }
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Verificar status da API
+      async function checkApiStatus() {
+        try {
+          const response = await fetch("/status");
+          const data = await response.json();
+          const statusElement = document.getElementById("apiStatus");
+          if (data.status === "online") {
+            statusElement.className = "status online";
+            statusElement.textContent = "API Online";
+          } else {
+            statusElement.className = "status offline";
+            statusElement.textContent = "API Offline";
+          }
+        } catch (error) {
+          const statusElement = document.getElementById("apiStatus");
+          statusElement.className = "status offline";
+          statusElement.textContent = "API Offline";
+        }
+      }
+
+      // Verificar status a cada 30 segundos
+      checkApiStatus();
+      setInterval(checkApiStatus, 30000);
+    </script>
+  </body>
+</html>

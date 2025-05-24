@@ -1,0 +1,76 @@
+.endpoint {
+  background-color: var(--white-bg);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  margin-bottom: 20px;
+  border-left: 4px solid var(--secondary-color);
+}
+.method {
+  font-weight: bold;
+  color: var(--secondary-color);
+  display: inline-block;
+  min-width: 80px;
+}
+.url {
+  font-family: monospace;
+  background-color: var(--light-bg);
+  padding: 2px 5px;
+  border-radius: 3px;
+  margin-left: 10px;
+}
+.description {
+  margin: 10px 0;
+  color: var(--text-color);
+}
+.section {
+  margin-bottom: 40px;
+}
+.request-body,
+.response {
+  background-color: var(--light-bg);
+  padding: 15px;
+  border-radius: var(--border-radius);
+  margin-top: 10px;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+.params {
+  margin: 10px 0;
+}
+.param {
+  margin: 5px 0;
+}
+.param-name {
+  font-weight: bold;
+  color: var(--secondary-color);
+}
+.status {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 0.9em;
+  margin-left: 10px;
+}
+.status.online {
+  background-color: var(--success-color);
+  color: var(--white-bg);
+}
+.status.offline {
+  background-color: var(--error-color);
+  color: var(--white-bg);
+}
+.doc-header {
+  background-color: var(--white-bg);
+  padding: 30px;
+  border-radius: var(--border-radius);
+  margin-bottom: 30px;
+  text-align: center;
+}
+.doc-header h1 {
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+.doc-header p {
+  color: var(--text-color);
+  font-size: 1.1em;
+}

@@ -1,0 +1,23 @@
+.error-container {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.error-code {
+  font-size: 6rem;
+  margin-bottom: 20px;
+}
+
+.error-code-404 {
+  color: var(--primary-color);
+}
+
+.error-code-500 {
+  color: var(--error-color);
+}
+
+.error-message {
+  font-size: 1.5rem;
+  color: var(--secondary-color);
+  margin-bottom: 30px;
+}
