@@ -48,12 +48,17 @@ cp .env.example .env
 
 Exemplo de configuração do `.env`:
 ```env
-DB_USER=seu_usuario
-DB_HOST=localhost
-DB_DATABASE=reserva_salas
-DB_PASSWORD=sua_senha
-DB_PORT=5432
-DB_SSL=false
+# Configurações do banco de dados
+DB_USER=
+DB_HOST=
+DB_DATABASE=
+DB_PASSWORD=
+DB_PORT=
+DB_SSL=
+
+# Configurações do servidor
+PORT=
+NODE_ENV=
 ```
 
 4. **Inicialize o banco de dados**:
@@ -99,12 +104,12 @@ Para a documentação completa dos endpoints, consulte o arquivo [docs/wad.md](.
 ## Documentação
 
 ### Documentação Técnica Completa
-- **Arquitetura Web (WAD)**: [docs/wad.md](./docs/wad.md) - Documentação técnica detalhada
-- **Documentação HTML**: [public/pages/documentacao.html](./public/pages/documentacao.html) - Versão navegável
+- **Arquitetura Web (WAD)**: [`docs/wad.md`](./docs/wad.md) - Documentação técnica detalhada
+- **Documentação HTML**: [`public/pages/documentacao.html`](./public/pages/documentacao.html) - Versão navegável
 
 ### Modelo de Dados
-- **Diagrama Interativo**: [public/images/modelo-banco.svg](./public/images/modelo-banco.svg)
-- **Versão PDF**: [public/files/modelo-banco.pdf](./public/files/modelo-banco.pdf)
+- **Diagrama Interativo**: [`public/images/modelo-banco.svg`](./public/images/modelo-banco.svg)
+- **Versão PDF**: [`public/files/modelo-banco.pdf`](./public/files/modelo-banco.pdf)
 
 ## Estrutura do Projeto
 
@@ -134,4 +139,4 @@ Este projeto faz parte do módulo 2 do curso de Ciência da Computação do Inte
 
 ## Autor
 
-Richard Dalves - Estudante de Ciência da Computação no Inteli
+Richard Alves - Estudante de Ciência da Computação no Inteli
