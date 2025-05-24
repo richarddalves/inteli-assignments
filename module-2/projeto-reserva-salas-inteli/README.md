@@ -2,7 +2,7 @@
 
 [![Instituição](https://img.shields.io/badge/Inteli-Ciência_da_Computação-purple?style=flat-square)](https://www.inteli.edu.br/ciencia-da-computacao/)
 [![Status](https://img.shields.io/badge/status-em_desenvolvimento-yellow?style=flat-square)](https://github.com/richarddalves/inteli-assignments/tree/main/module-2/projeto-reserva-salas-inteli)
-[![Arquitetura](https://img.shields.io/badge/arquitetura-MVC-gren?style=flat-square)](https://github.com/richarddalves/inteli-assignments/tree/main/module-2/projeto-reserva-salas-inteli)
+
 
 ## Descrição do Sistema
 
