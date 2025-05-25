@@ -8,7 +8,9 @@
     "dev": "nodemon src/server.js",
     "test": "npx jest --detectOpenHandles",
     "test:watch": "npx jest --watch",
-    "test:coverage": "npx jest --coverage"
+    "test:coverage": "npx jest --coverage",
+    "migrate": "node src/scripts/runSQLScript.js",
+    "init-db": "node src/scripts/runSQLScript.js"
   },
   "keywords": [
     "reserva",
