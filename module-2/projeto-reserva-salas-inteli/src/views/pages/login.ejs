@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Sistema de Reserva de Salas</title>
+    <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="stylesheet" href="/styles/auth.css" />
+  </head>
+  <body>
+    <%- include('../partials/header') %>
+    <div class="container">
+      <div class="hero">
+        <h1>Sistema de Reserva de Salas</h1>
+        <p class="lead">Faça login para continuar</p>
+      </div>
+
+      <div class="auth-container">
+        <form id="formulario-login" class="auth-form">
+          <div class="form-group">
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+
+          <div class="form-group">
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" required />
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Entrar</button>
+            <a href="/auth/registro" class="btn btn-secondary">Criar Conta</a>
+          </div>
+        </form>
+      </div>
+    </div>
+    <%- include('../partials/footer') %>
+
+    <script>
+      document
+        .getElementById("formulario-login")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const email = document.getElementById("email").value;
+          const senha = document.getElementById("senha").value;
+
+          try {
+            const response = await fetch("/auth/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, senha }),
+            });
+
+            if (response.ok) {
+              window.location.href = "/";
+            } else {
+              const error = await response.json();
+              alert(`Erro ao fazer login: ${error.message}`);
+            }
+          } catch (error) {
+            console.error("Erro ao fazer login:", error);
+            alert("Erro ao fazer login. Tente novamente.");
+          }
+        });
+    </script>
+
+    <style>
+      .auth-form {
+        padding: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+    </style>
+  </body>
+</html>
