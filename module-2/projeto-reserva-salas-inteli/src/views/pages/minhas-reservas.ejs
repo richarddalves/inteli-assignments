@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minhas Reservas - Sistema de Reserva de Salas</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <%- include('../partials/header') %>
+
+    <main class="container">
+      <div class="header-actions">
+        <div class="header-title">
+          <h1><i class="fas fa-calendar-check"></i> Minhas Reservas</h1>
+          <p class="subtitle">Gerencie suas reservas de salas</p>
+        </div>
+        <a href="/reservas/nova" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Nova Reserva
+        </a>
+      </div>
+
+      <div class="reservas-container">
+        <% if (reservas && reservas.length > 0) { %>
+        <div class="reservas-stats">
+          <div class="stat-card">
+            <i class="fas fa-clock"></i>
+            <div class="stat-info">
+              <h3>Próxima Reserva</h3>
+              <p><%= new Date(reservas[0].start_time).toLocaleString() %></p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-calendar-alt"></i>
+            <div class="stat-info">
+              <h3>Total de Reservas</h3>
+              <p><%= reservas.length %></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="reservas-grid">
+          <% const statusTraduzidos = { 'reserved': 'Reservada', 'approved':
+          'Aprovada', 'rejected': 'Rejeitada', 'cancelled': 'Cancelada',
+          'completed': 'Concluída', 'released': 'Liberada' }; %> <%
+          reservas.forEach(function(reserva) { %>
+          <div class="reserva-card <%= reserva.status %>">
+            <div class="reserva-header">
+              <h3>
+                <i class="fas fa-door-open"></i>
+                <%= reserva.room_name %>
+              </h3>
+              <span class="status-badge <%= reserva.status %>">
+                <%= statusTraduzidos[reserva.status] || reserva.status %>
+              </span>
+            </div>
+
+            <div class="reserva-info">
+              <div class="info-group">
+                <i class="far fa-clock"></i>
+                <div>
+                  <p class="label">Início</p>
+                  <p class="value">
+                    <%= new Date(reserva.start_time).toLocaleString() %>
+                  </p>
+                </div>
+              </div>
+
+              <div class="info-group">
+                <i class="far fa-clock"></i>
+                <div>
+                  <p class="label">Fim</p>
+                  <p class="value">
+                    <%= new Date(reserva.end_time).toLocaleString() %>
+                  </p>
+                </div>
+              </div>
+
+              <% if (reserva.reason) { %>
+              <div class="info-group">
+                <i class="far fa-comment-alt"></i>
+                <div>
+                  <p class="label">Motivo</p>
+                  <p class="value"><%= reserva.reason %></p>
+                </div>
+              </div>
+              <% } %>
+            </div>
+
+            <div class="reserva-actions">
+              <% if (reserva.status === 'reserved' || reserva.status ===
+              'approved') { %>
+              <button
+                class="btn btn-danger"
+                onclick="cancelarReserva(<%= reserva.booking_id %>)"
+              >
+                <i class="fas fa-times"></i> Cancelar
+              </button>
+              <% } %>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+        <% } else { %>
+        <div class="no-reservas">
+          <i class="far fa-calendar-times"></i>
+          <h2>Você ainda não tem reservas</h2>
+          <p>Comece criando sua primeira reserva de sala!</p>
+          <a href="/reservas/nova" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Criar Reserva
+          </a>
+        </div>
+        <% } %>
+      </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+      async function cancelarReserva(bookingId) {
+        if (confirm("Tem certeza que deseja cancelar esta reserva?")) {
+          try {
+            const response = await fetch(`/reservas/${bookingId}`, {
+              method: "DELETE",
+            });
+            if (response.ok) {
+              window.location.reload();
+            } else {
+              const data = await response.json();
+              alert(data.error || "Erro ao cancelar reserva");
+            }
+          } catch (error) {
+            alert("Erro ao cancelar reserva");
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

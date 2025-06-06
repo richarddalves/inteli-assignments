@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="user-id" content="<%= user.id %>" />
+    <title>Nova Reserva - Sistema de Reserva de Salas</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css"
+    />
+  </head>
+  <body>
+    <%- include('../partials/header') %>
+
+    <main class="container">
+      <div class="header-actions">
+        <h1>Nova Reserva</h1>
+      </div>
+
+      <div class="reserva-container">
+        <div class="form-section">
+          <h2>Detalhes da Reserva</h2>
+          <form id="formulario-reserva" class="formulario-reserva">
+            <div class="form-group">
+              <label for="data">Data:</label>
+              <input
+                type="text"
+                id="data"
+                name="data"
+                required
+                placeholder="Selecione a data"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="hora">Hora de Início:</label>
+              <input
+                type="text"
+                id="hora"
+                name="hora"
+                required
+                placeholder="Selecione a hora"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Duração:</label>
+              <div class="duration-selector">
+                <div class="duration-option" data-minutes="15">15 min</div>
+                <div class="duration-option" data-minutes="30">30 min</div>
+                <div class="duration-option" data-minutes="45">45 min</div>
+                <div class="duration-option" data-minutes="60">1 hora</div>
+                <div class="duration-option" data-minutes="90">1h 30min</div>
+                <div class="duration-option" data-minutes="120">2 horas</div>
+              </div>
+            </div>
+
+            <div class="time-display">
+              <div id="inicio-display"></div>
+              <div id="fim-display"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="motivo">Motivo da Reserva:</label>
+              <textarea id="motivo" name="reason" rows="4" required></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">
+                Criar Reserva
+              </button>
+              <a href="/reservas" class="btn btn-secondary">Cancelar</a>
+            </div>
+          </form>
+        </div>
+
+        <div class="rooms-section">
+          <h2>Salas Disponíveis</h2>
+
+          <div class="filters">
+            <button class="filter-btn active" data-filter="all">Todas</button>
+            <button class="filter-btn" data-filter="available">
+              Disponíveis
+            </button>
+            <button class="filter-btn" data-filter="telefonica">
+              Telefônicas
+            </button>
+            <button class="filter-btn" data-filter="estudos">Estudos</button>
+          </div>
+
+          <div class="room-grid">
+            <% rooms.forEach(function(room) { %>
+            <div
+              class="room-card <%= room.is_reserved ? 'reserved' : 'available' %>"
+              data-room-id="<%= room.room_id %>"
+              data-type="<%= room.room_type.toLowerCase() %>"
+            >
+              <h3><%= room.name %></h3>
+              <p><%= room.location %></p>
+              <span
+                class="room-status <%= room.is_reserved ? 'status-reserved' : 'status-available' %>"
+              >
+                <%= room.is_reserved ? 'Reservada' : 'Disponível' %>
+              </span>
+            </div>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+    <script>
+      // Flatpickr para data
+      flatpickr("#data", {
+        locale: "pt",
+        dateFormat: "d/m/Y",
+        minDate: "today",
+        disableMobile: true,
+        altInput: true,
+        altFormat: "d/m/Y",
+      });
+
+      // Flatpickr para hora
+      flatpickr("#hora", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        minTime: "07:00",
+        maxTime: "21:00",
+        locale: "pt",
+        disableMobile: true,
+      });
+
+      // Configuração inicial
+      const today = new Date();
+      const dateInput = document.getElementById("data");
+      const timeInput = document.getElementById("hora");
+      const durationOptions = document.querySelectorAll(".duration-option");
+      const roomCards = document.querySelectorAll(".room-card");
+      const filterButtons = document.querySelectorAll(".filter-btn");
+      const inicioDisplay = document.getElementById("inicio-display");
+      const fimDisplay = document.getElementById("fim-display");
+      let selectedRoom = null;
+      let selectedDuration = 60; // 1 hora por padrão
+
+      // Configurar data mínima como hoje
+      dateInput.min = today.toISOString().split("T")[0];
+
+      // Configurar hora atual como hora mínima para hoje
+      timeInput.addEventListener("change", function () {
+        const selectedDate = new Date(dateInput.value);
+        const isToday = selectedDate.toDateString() === today.toDateString();
+
+        if (isToday) {
+          const currentHour = today.getHours();
+          const currentMinute = today.getMinutes();
+          const minTime = `${currentHour
+            .toString()
+            .padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
+          timeInput.min = minTime;
+        } else {
+          timeInput.min = "00:00";
+        }
+      });
+
+      // Seleção de duração
+      durationOptions.forEach((option) => {
+        option.addEventListener("click", function () {
+          durationOptions.forEach((opt) => opt.classList.remove("selected"));
+          this.classList.add("selected");
+          selectedDuration = parseInt(this.dataset.minutes);
+          updateTimeDisplay();
+        });
+      });
+
+      // Seleção de sala
+      roomCards.forEach((card) => {
+        card.addEventListener("click", function () {
+          if (!this.classList.contains("unavailable")) {
+            roomCards.forEach((c) => {
+              c.classList.remove("selected");
+              c.style.transform = "scale(1)";
+            });
+            this.classList.add("selected");
+            this.style.transform = "scale(1.05)";
+            selectedRoom = this.dataset.roomId;
+          }
+        });
+      });
+
+      // Filtros de sala
+      filterButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          filterButtons.forEach((btn) => btn.classList.remove("active"));
+          this.classList.add("active");
+
+          const filter = this.dataset.filter;
+          roomCards.forEach((card) => {
+            if (filter === "all") {
+              card.style.display = "block";
+            } else if (filter === "available") {
+              card.style.display = card.classList.contains("available")
+                ? "block"
+                : "none";
+            } else {
+              card.style.display =
+                card.dataset.type === filter ? "block" : "none";
+            }
+          });
+        });
+      });
+
+      // Atualizar display de tempo
+      function updateTimeDisplay() {
+        const dateInput = document.getElementById("data");
+        const timeInput = document.getElementById("hora");
+
+        if (dateInput.value && timeInput.value) {
+          const [day, month, year] = dateInput.value.split("/");
+          const [hours, minutes] = timeInput.value.split(":");
+
+          const startTime = new Date(year, month - 1, day, hours, minutes);
+          const endTime = new Date(
+            startTime.getTime() + selectedDuration * 60000
+          );
+
+          inicioDisplay.textContent = `Início: ${formatDateTime(startTime)}`;
+          fimDisplay.textContent = `Fim: ${formatDateTime(endTime)}`;
+        }
+      }
+
+      // Formatar data e hora
+      function formatDateTime(date) {
+        return date.toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        });
+      }
+
+      // Atualizar display quando data ou hora mudar
+      dateInput.addEventListener("change", updateTimeDisplay);
+      timeInput.addEventListener("change", updateTimeDisplay);
+
+      // Manipular envio do formulário
+      document
+        .getElementById("formulario-reserva")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          console.log("Formulário submetido");
+
+          const selectedRoom = document.querySelector(".room-card.selected");
+          if (!selectedRoom) {
+            alert("Por favor, selecione uma sala");
+            return;
+          }
+
+          const date = document.getElementById("data").value;
+          const time = document.getElementById("hora").value;
+          const reason = document.getElementById("motivo").value;
+
+          if (!date || !time || !reason) {
+            alert("Por favor, preencha todos os campos");
+            return;
+          }
+
+          // Converter data e hora para o formato ISO
+          const [day, month, year] = date.split("/");
+          const [hours, minutes] = time.split(":");
+          const startTime = new Date(year, month - 1, day, hours, minutes);
+
+          const endTime = new Date(startTime);
+          endTime.setMinutes(startTime.getMinutes() + selectedDuration);
+
+          const requestData = {
+            room_id: selectedRoom.dataset.roomId,
+            start_time: startTime.toISOString(),
+            end_time: endTime.toISOString(),
+            reason: reason,
+          };
+
+          console.log("Dados da requisição:", requestData);
+
+          const submitButton = document.querySelector('button[type="submit"]');
+          const originalButtonText = submitButton.textContent;
+
+          try {
+            // Desabilita o botão e mostra o cursor de loading
+            submitButton.disabled = true;
+            submitButton.style.cursor = "wait";
+            submitButton.textContent = "Criando reserva...";
+
+            console.log("Enviando requisição para /reservas");
+            const response = await fetch("/reservas", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(requestData),
+            });
+
+            console.log("Resposta recebida:", response.status);
+            const result = await response.json();
+            console.log("Resultado:", result);
+
+            if (response.status === 401) {
+              console.log("Usuário não autenticado, redirecionando para login");
+              window.location.href = "/auth/login";
+              return;
+            }
+
+            if (response.status === 201) {
+              console.log("Reserva criada com sucesso");
+              alert("Reserva criada com sucesso!");
+              window.location.href = "/reservas";
+              return;
+            }
+
+            throw new Error(result.message || "Erro ao criar reserva");
+          } catch (error) {
+            console.error("Erro:", error);
+            alert(
+              error.message ||
+                "Erro ao criar reserva. Por favor, tente novamente."
+            );
+          } finally {
+            // Restaura o botão ao estado original
+            submitButton.disabled = false;
+            submitButton.style.cursor = "pointer";
+            submitButton.textContent = originalButtonText;
+          }
+        });
+
+      // Verificar disponibilidade das salas
+      async function checkRoomAvailability() {
+        if (dateInput.value && timeInput.value) {
+          const startTime = new Date(`${dateInput.value}T${timeInput.value}`);
+          const endTime = new Date(
+            startTime.getTime() + selectedDuration * 60000
+          );
+
+          try {
+            const response = await fetch("/reservas/check-availability", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                start_time: startTime.toISOString(),
+                end_time: endTime.toISOString(),
+              }),
+            });
+
+            if (response.ok) {
+              const availability = await response.json();
+              updateRoomAvailability(availability);
+            }
+          } catch (error) {
+            console.error("Erro ao verificar disponibilidade:", error);
+          }
+        }
+      }
+
+      // Atualizar disponibilidade das salas
+      function updateRoomAvailability(availability) {
+        roomCards.forEach((card) => {
+          const roomId = card.dataset.roomId;
+          const isAvailable = availability[roomId];
+
+          card.classList.remove("available", "unavailable");
+          card.classList.add(isAvailable ? "available" : "unavailable");
+
+          const statusSpan = card.querySelector(".room-status");
+          statusSpan.textContent = isAvailable ? "Disponível" : "Indisponível";
+          statusSpan.className = `room-status ${
+            isAvailable ? "status-available" : "status-unavailable"
+          }`;
+        });
+      }
+
+      // Verificar disponibilidade quando data ou hora mudar
+      dateInput.addEventListener("change", checkRoomAvailability);
+      timeInput.addEventListener("change", checkRoomAvailability);
+      durationOptions.forEach((option) => {
+        option.addEventListener("click", checkRoomAvailability);
+      });
+    </script>
+  </body>
+</html>
