@@ -3,6 +3,8 @@
 [![Instituição](https://img.shields.io/badge/Inteli-Ciência_da_Computação-purple?style=flat-square)](https://www.inteli.edu.br/ciencia-da-computacao/)
 [![Status](https://img.shields.io/badge/status-em_desenvolvimento-yellow?style=flat-square)](https://github.com/richarddalves/inteli-assignments/tree/main/module-2/projeto-reserva-salas-inteli)
 
+![Hero Illustration](public/images/hero.png)
+
 ## Descrição do Sistema
 
 Este é um sistema de reserva de salas desenvolvido para o Instituto de Tecnologia e Liderança (Inteli). O sistema permite que estudantes reservem salas de estudo e cabines para chamadas disponíveis no campus.

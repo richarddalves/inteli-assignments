@@ -24,6 +24,13 @@ app.set("views", path.join(__dirname, "views"));
 // Configurando o middleware para servir arquivos estáticos
 app.use(express.static(path.join(__dirname, "../public")));
 
+// Middleware específico para o favicon
+app.get("/images/favicon.ico", (req, res) => {
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Content-Type", "image/x-icon");
+  res.sendFile(path.join(__dirname, "../public/images/favicon.ico"));
+});
+
 // Configuração da sessão
 app.use(
   session({
