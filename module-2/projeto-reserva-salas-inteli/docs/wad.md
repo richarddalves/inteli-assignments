@@ -20,15 +20,19 @@
    - [Endpoints](#endpoints)
    - [Modelos de Dados](#modelos-de-dados)
    - [Regras de Negócio](#regras-de-negócio)
-5. [Aspectos Técnicos](#aspectos-técnicos)
+5. [Interface do Usuário](#interface-do-usuário)
+   - [Design Responsivo](#design-responsivo)
+   - [Componentes](#componentes)
+   - [Interatividade](#interatividade)
+6. [Aspectos Técnicos](#aspectos-técnicos)
    - [Segurança](#segurança)
    - [Performance](#performance)
    - [Testes](#testes)
    - [Monitoramento](#monitoramento)
-6. [Implantação e Manutenção](#implantação-e-manutenção)
+7. [Implantação e Manutenção](#implantação-e-manutenção)
    - [Deployment](#deployment)
    - [Manutenção](#manutenção)
-7. [Próximos Passos](#próximos-passos)
+8. [Próximos Passos](#próximos-passos)
 
 ## Introdução
 
@@ -42,15 +46,22 @@ O Sistema de Reserva de Salas do Inteli é uma aplicação web desenvolvida para
 - Fornecer feedback em tempo real sobre a disponibilidade dos espaços
 - Melhorar a utilização dos recursos de estudo disponíveis no campus
 - Fornecer uma API RESTful completa para integração com outros sistemas
+- Oferecer uma interface moderna e responsiva
+- Implementar um dashboard com estatísticas em tempo real
+- Garantir uma experiência de usuário intuitiva e eficiente
 
 ### Escopo
 
-O sistema gerencia o processo completo de reserva de salas através de uma API RESTful, implementando:
+O sistema gerencia o processo completo de reserva de salas através de uma API RESTful e interface web, implementando:
 
 - Gerenciamento de usuários (estudantes e administradores)
 - Gerenciamento de salas e seus tipos
 - Sistema de reservas com verificação de disponibilidade
-- Controle de status das reservas (reserved, approved, rejected, cancelled, completed, released)
+- Controle de status das reservas (reservada, aprovada, rejeitada, cancelada, concluída, liberada)
+- Dashboard com estatísticas em tempo real
+- Interface responsiva e moderna
+- Sistema de notificações para status de reservas
+- Suporte a múltiplos tipos de salas e equipamentos
 
 ### Público-alvo
 
@@ -72,15 +83,21 @@ reserva-salas/
 │   ├── repositories/   # Repositórios para acesso ao banco
 │   ├── routes/         # Rotas da API
 │   ├── views/          # Templates EJS
+│   │   ├── pages/     # Páginas principais
+│   │   ├── partials/  # Componentes reutilizáveis
+│   │   └── errors/    # Páginas de erro
 │   └── server.js       # Arquivo principal
 ├── public/             # Arquivos estáticos
+│   ├── css/           # Estilos
+│   ├── images/        # Imagens e ícones
+│   └── js/            # Scripts do cliente
 ├── docs/              # Documentação adicional
 └── tests/             # Testes automatizados
 ```
 
 ### Padrão MVC
 
-O sistema segue o padrão Model-View-Controller (MVC) com algumas adaptações para uma API RESTful:
+O sistema segue o padrão Model-View-Controller (MVC) com algumas adaptações para uma API RESTful e interface web:
 
 1. **Models** (`src/models/`)
 
@@ -104,7 +121,14 @@ O sistema segue o padrão Model-View-Controller (MVC) com algumas adaptações p
    - Gerenciam queries SQL
    - Classes: `UsuarioRepository`, `SalaRepository`, `ReservaRepository`, `TipoSalaRepository`
 
-4. **Routes** (`src/routes/`)
+4. **Views** (`src/views/`)
+
+   - Templates EJS para renderização do frontend
+   - Componentes reutilizáveis
+   - Páginas de erro personalizadas
+   - Estrutura organizada em páginas e partials
+
+5. **Routes** (`src/routes/`)
    - Definem endpoints da API
    - Mapeiam URLs para controllers
    - Implementam middleware quando necessário
@@ -113,6 +137,7 @@ O sistema segue o padrão Model-View-Controller (MVC) com algumas adaptações p
 ### Tecnologias Utilizadas
 
 - **Backend**: Node.js, Express
+- **Frontend**: EJS, CSS3, JavaScript
 - **Banco de Dados**: PostgreSQL
 - **ORM**: pg (node-postgres)
 - **Testes**: Jest
@@ -315,6 +340,49 @@ O modelo de dados do sistema pode ser visualizado através dos seguintes arquivo
    - Tipos: sala de estudo, cabine
    - Capacidade deve ser maior que zero
    - Nome deve ser único
+
+## Interface do Usuário
+
+### Design Responsivo
+
+O sistema implementa um design responsivo que se adapta a diferentes tamanhos de tela:
+
+- Layout fluido que se ajusta a dispositivos móveis e desktop
+- Componentes flexíveis e adaptáveis
+- Tipografia responsiva
+- Imagens otimizadas para diferentes resoluções
+
+### Componentes
+
+1. **Header**
+
+   - Logo e título do sistema
+   - Menu de navegação
+   - Links de autenticação/usuário
+
+2. **Dashboard**
+
+   - Estatísticas em tempo real
+   - Gráficos de ocupação
+   - Lista de reservas ativas
+
+3. **Formulários**
+
+   - Validação em tempo real
+   - Feedback visual
+   - Campos adaptados ao contexto
+
+4. **Cards de Sala**
+   - Status visual (disponível/reservada)
+   - Informações essenciais
+   - Ações contextuais
+
+### Interatividade
+
+- Atualizações em tempo real
+- Feedback visual para ações
+- Animações suaves
+- Notificações de status
 
 ## Aspectos Técnicos
 

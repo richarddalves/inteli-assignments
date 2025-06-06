@@ -3,7 +3,6 @@
 [![Instituição](https://img.shields.io/badge/Inteli-Ciência_da_Computação-purple?style=flat-square)](https://www.inteli.edu.br/ciencia-da-computacao/)
 [![Status](https://img.shields.io/badge/status-em_desenvolvimento-yellow?style=flat-square)](https://github.com/richarddalves/inteli-assignments/tree/main/module-2/projeto-reserva-salas-inteli)
 
-
 ## Descrição do Sistema
 
 Este é um sistema de reserva de salas desenvolvido para o Instituto de Tecnologia e Liderança (Inteli). O sistema permite que estudantes reservem salas de estudo e cabines para chamadas disponíveis no campus.
@@ -16,6 +15,10 @@ Este é um sistema de reserva de salas desenvolvido para o Instituto de Tecnolog
 - Autenticação com email institucional
 - API RESTful completa para gerenciamento de usuários, salas e reservas
 - Arquitetura MVC com separação clara de responsabilidades
+- Interface responsiva e moderna
+- Dashboard com estatísticas em tempo real
+- Sistema de notificações para status de reservas
+- Suporte a múltiplos tipos de salas e equipamentos
 
 O Inteli possui um modelo de ensino 100% baseado em projetos, e os estudantes são livres para estudar em qualquer espaço do campus. Este sistema facilita o gerenciamento dos espaços compartilhados, garantindo que todos tenham acesso justo às salas de estudo e cabines para chamadas.
 
@@ -30,23 +33,27 @@ O Inteli possui um modelo de ensino 100% baseado em projetos, e os estudantes s�
 ### Instalação e Configuração
 
 1. **Clone o repositório**:
+
 ```bash
 git clone https://github.com/richarddalves/inteli-assignments.git
 cd inteli-assignments/module-2/projeto-reserva-salas-inteli
 ```
 
 2. **Instale as dependências**:
+
 ```bash
 npm install
 ```
 
 3. **Configure as variáveis de ambiente**:
+
 ```bash
 cp .env.example .env
 # Edite o arquivo .env com suas credenciais do banco de dados
 ```
 
 Exemplo de configuração do `.env`:
+
 ```env
 # Configurações do banco de dados
 DB_USER=
@@ -58,15 +65,17 @@ DB_SSL=
 
 # Configurações do servidor
 PORT=
-NODE_ENV=development  # Qualquer valor diferente de test 
+NODE_ENV=development  # Qualquer valor diferente de test
 ```
 
 4. **Inicialize o banco de dados**:
+
 ```bash
 node src/scripts/runSQLScript.js
 ```
 
 5. **Execute o servidor**:
+
 ```bash
 npm start
 ```
@@ -76,6 +85,7 @@ O servidor estará disponível em `http://localhost:3000`
 ### Testes
 
 Para executar os testes:
+
 ```bash
 npm test
 ```
@@ -86,9 +96,39 @@ Para testar os endpoints da API, utilize o arquivo `rest.http` com a extensão R
 
 - **Backend**: Node.js, Express
 - **Banco de Dados**: PostgreSQL
+- **Frontend**: EJS, CSS3, JavaScript
 - **Arquitetura**: MVC (Model-View-Controller)
 - **Testes**: Jest
 - **Documentação**: Markdown, OpenAPI (em desenvolvimento)
+
+## Funcionalidades Principais
+
+### Usuários
+
+- Registro e login com email institucional
+- Perfil de usuário com histórico de reservas
+- Níveis de acesso (estudante, administrador)
+
+### Reservas
+
+- Agendamento de salas com duração flexível
+- Verificação de disponibilidade em tempo real
+- Cancelamento e liberação antecipada
+- Notificações de status (aprovada, rejeitada, cancelada)
+
+### Salas
+
+- Categorização por tipo (estudo, chamada)
+- Status de disponibilidade em tempo real
+- Equipamentos e recursos disponíveis
+- Localização e capacidade
+
+### Dashboard
+
+- Estatísticas de uso em tempo real
+- Gráficos de ocupação
+- Relatórios de utilização
+- Monitoramento de reservas ativas
 
 ## API Endpoints
 
@@ -104,10 +144,12 @@ Para a documentação completa dos endpoints, consulte o arquivo [docs/wad.md](.
 ## Documentação
 
 ### Documentação Técnica Completa
+
 - **Arquitetura Web (WAD)**: [`docs/wad.md`](./docs/wad.md) - Documentação técnica detalhada
 - **Documentação HTML**: [`public/pages/documentacao.html`](./public/pages/documentacao.html) - Versão navegável
 
 ### Modelo de Dados
+
 - **Diagrama Interativo**: [`public/images/modelo-banco.svg`](./public/images/modelo-banco.svg)
 - **Versão PDF**: [`public/files/modelo-banco.pdf`](./public/files/modelo-banco.pdf)
 
@@ -126,6 +168,9 @@ Para a documentação completa dos endpoints, consulte o arquivo [docs/wad.md](.
 │   ├── views/           # Templates EJS
 │   └── scripts/         # Scripts utilitários
 ├── public/              # Arquivos estáticos
+│   ├── css/            # Estilos
+│   ├── images/         # Imagens e ícones
+│   └── js/             # Scripts do cliente
 ├── docs/                # Documentação
 ├── tests/               # Testes automatizados
 ├── .env.example         # Exemplo de configuração
