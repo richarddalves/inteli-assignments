@@ -3,46 +3,395 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= title %></title>
+    <title>Início - Sistema de Reserva de Salas</title>
     <link rel="stylesheet" href="/styles/main.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
   </head>
   <body>
     <%- include('../partials/header') %>
 
-    <main class="container">
+    <main>
+      <!-- Hero Section -->
       <section class="hero">
-        <h1><%= title %></h1>
-        <p class="lead"><%= message %></p>
-        <div class="cta-buttons">
-          <a href="/documentacao" class="btn btn-primary">Ver Documentação</a>
-          <a href="/status" class="btn btn-secondary">Verificar Status</a>
+        <div class="hero-content">
+          <h1 class="hero-title" style="color: white">
+            Bem-vindo ao Sistema de Reserva de Salas
+          </h1>
+          <p class="lead">
+            Gerencie suas reservas de sala de forma simples e eficiente
+          </p>
+          <div class="hero-buttons">
+            <% if (user) { %>
+            <a href="/reservas/nova" class="btn">
+              <i class="fas fa-calendar-plus"></i> Nova Reserva
+            </a>
+            <a href="/reservas/minhas" class="btn btn-outline">
+              <i class="fas fa-list"></i> Minhas Reservas
+            </a>
+            <% } else { %>
+            <a href="/auth/login" class="btn">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+            <a href="/auth/registro" class="btn btn-outline">
+              <i class="fas fa-user-plus"></i> Cadastre-se
+            </a>
+            <% } %>
+          </div>
+        </div>
+        <div class="hero-image">
+          <img
+            src="/images/hero-illustration.svg"
+            alt="Ilustração de reserva de salas"
+          />
         </div>
       </section>
 
+      <!-- Features Section -->
       <section class="features">
-        <h2>Funcionalidades Principais</h2>
+        <h2>Recursos Principais</h2>
         <div class="feature-grid">
           <div class="feature-card">
-            <h3>Reserva de Salas</h3>
+            <div class="feature-icon">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <h3>Reserve Salas</h3>
             <p>
-              Reserve salas de estudo e cabines de forma rápida e eficiente.
+              Encontre e reserve salas disponíveis para seus estudos e reuniões
+              de forma rápida e intuitiva
             </p>
           </div>
           <div class="feature-card">
-            <h3>Gestão de Usuários</h3>
+            <div class="feature-icon">
+              <i class="fas fa-tasks"></i>
+            </div>
+            <h3>Gerencie Reservas</h3>
             <p>
-              Cadastro e gerenciamento de usuários com diferentes níveis de
-              acesso.
+              Acompanhe e gerencie todas as suas reservas em um só lugar, com
+              visualização clara e organizada
             </p>
           </div>
           <div class="feature-card">
-            <h3>Disponibilidade em Tempo Real</h3>
-            <p>Verifique a disponibilidade das salas em tempo real.</p>
+            <div class="feature-icon">
+              <i class="fas fa-bell"></i>
+            </div>
+            <h3>Notificações</h3>
+            <p>
+              Receba lembretes e atualizações sobre suas reservas para nunca
+              perder um compromisso
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- How It Works Section -->
+      <section class="how-it-works">
+        <h2>Como Funciona</h2>
+        <div class="steps-container">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <i class="fas fa-sign-in-alt"></i>
+              <h3>Faça Login</h3>
+              <p>
+                Acesse o sistema com sua conta do Inteli de forma segura e
+                rápida
+              </p>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <i class="fas fa-door-open"></i>
+              <h3>Escolha uma Sala</h3>
+              <p>
+                Selecione a sala que melhor atende suas necessidades entre as
+                disponíveis
+              </p>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <i class="fas fa-check-circle"></i>
+              <h3>Faça sua Reserva</h3>
+              <p>
+                Defina o horário e confirme sua reserva com apenas alguns
+                cliques
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Stats Section -->
+      <section class="quick-stats">
+        <div class="stat-card">
+          <i class="fas fa-clock"></i>
+          <div class="stat-info">
+            <h3>Reservas Hoje</h3>
+            <p><%= stats.today %> salas reservadas</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-calendar-week"></i>
+          <div class="stat-info">
+            <h3>Esta Semana</h3>
+            <p><%= stats.week %> reservas confirmadas</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-users"></i>
+          <div class="stat-info">
+            <h3>Usuários Ativos</h3>
+            <p><%= stats.activeUsers %>+ estudantes</p>
           </div>
         </div>
       </section>
     </main>
 
     <%- include('../partials/footer') %>
+
+    <style>
+      .hero {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4rem 2rem;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          #1a1a2e 100%
+        );
+        color: var(--white-bg);
+        border-radius: 15px;
+        margin-bottom: 3rem;
+      }
+
+      .hero-content {
+        flex: 1;
+        max-width: 600px;
+      }
+
+      .hero-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+        color: white !important;
+      }
+
+      .hero .lead {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+        color: var(--white-bg);
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--white-bg);
+      }
+
+      .btn-outline:hover {
+        background: var(--white-bg);
+        color: var(--primary-color);
+      }
+
+      .hero-image {
+        flex: 1;
+        max-width: 500px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .hero-image img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .features {
+        padding: 4rem 2rem;
+        text-align: center;
+      }
+
+      .features h2 {
+        font-size: 2rem;
+        margin-bottom: 3rem;
+        color: var(--primary-color);
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .feature-card {
+        background: var(--white-bg);
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .feature-icon {
+        font-size: 2.5rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+      }
+
+      .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+      }
+
+      .how-it-works {
+        padding: 4rem 2rem;
+        background-color: var(--light-bg);
+        text-align: center;
+      }
+
+      .how-it-works h2 {
+        font-size: 2rem;
+        margin-bottom: 3rem;
+        color: var(--primary-color);
+      }
+
+      .steps-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .step {
+        flex: 1;
+        max-width: 300px;
+        position: relative;
+      }
+
+      .step-number {
+        width: 40px;
+        height: 40px;
+        background: var(--secondary-color);
+        color: var(--white-bg);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin: 0 auto 1rem;
+      }
+
+      .step-content {
+        background: var(--white-bg);
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .step-content i {
+        font-size: 2rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+      }
+
+      .step-content h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+      }
+
+      .step-connector {
+        flex: 0 0 50px;
+        height: 2px;
+        background: var(--secondary-color);
+        position: relative;
+      }
+
+      .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .stat-card {
+        background: var(--white-bg);
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .stat-card i {
+        font-size: 2rem;
+        color: var(--secondary-color);
+      }
+
+      .stat-info h3 {
+        font-size: 1.2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-info p {
+        color: var(--text-color);
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+
+      @media (max-width: 768px) {
+        .hero {
+          flex-direction: column;
+          text-align: center;
+          padding: 2rem 1rem;
+        }
+
+        .hero-content {
+          margin-bottom: 2rem;
+        }
+
+        .hero-buttons {
+          justify-content: center;
+        }
+
+        .steps-container {
+          flex-direction: column;
+        }
+
+        .step-connector {
+          width: 2px;
+          height: 50px;
+        }
+
+        .quick-stats {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </body>
 </html>

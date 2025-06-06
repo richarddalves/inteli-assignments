@@ -4,6 +4,9 @@ const express = require("express");
 require("dotenv").config();
 const path = require("path");
 const routes = require("./routes");
+const session = require("express-session");
+const pgSession = require("connect-pg-simple")(session);
+const { pool } = require("./config/db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +23,29 @@ app.set("views", path.join(__dirname, "views"));
 
 // Configurando o middleware para servir arquivos estáticos
 app.use(express.static(path.join(__dirname, "../public")));
+
+// Configuração da sessão
+app.use(
+  session({
+    store: new pgSession({
+      pool: pool,
+      tableName: "sessions",
+    }),
+    secret: process.env.SESSION_SECRET || "sua-chave-secreta",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000, // 24 horas
+    },
+  })
+);
+
+// Middleware para disponibilizar dados do usuário em todas as views
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  next();
+});
 
 // Middleware para tratamento de CORS
 app.use((req, res, next) => {
@@ -39,38 +65,24 @@ app.use((req, res, next) => {
 app.use("/", routes);
 
 // Função para iniciar o servidor
-const startServer = async (port) => {
+async function startServer() {
   try {
-    // Verificar conexão com o banco antes de iniciar o servidor
-    const db = require("./config/db");
-    const dbStatus = await db.checkConnection();
-
-    if (!dbStatus.connected) {
-      console.error("Erro ao conectar com o banco de dados:", dbStatus.error);
-      process.exit(1);
-    }
-
-    app.listen(port, () => {
-      console.log(`Servidor rodando em http://localhost:${port}`);
+    app.listen(PORT, () => {
+      console.log(`Servidor rodando em http://localhost:${PORT}`);
     });
-  } catch (error) {
-    if (error.code === "EADDRINUSE") {
-      console.log(`Porta ${port} em uso, tentando porta ${port + 1}`);
-      startServer(port + 1);
-    } else {
-      console.error("Erro ao iniciar o servidor:", error);
-      process.exit(1);
-    }
+  } catch (err) {
+    console.error("Erro ao iniciar o servidor:", err);
+    process.exit(1);
   }
-};
+}
 
 // Inicializa o servidor apenas se não estiver em ambiente de teste
 if (process.env.NODE_ENV !== "test") {
-  startServer(PORT);
+  startServer();
 }
 
 // Tratamento de erros 404
-app.use((req, res) => {
+app.use((req, res, next) => {
   res.status(404).render("errors/404", {
     title: "Página não encontrada",
     message: "A página que você está procurando não existe.",
@@ -79,11 +91,10 @@ app.use((req, res) => {
 
 // Tratamento de erros 500
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error("Erro:", err);
   res.status(500).render("errors/500", {
-    title: "Erro interno do servidor",
-    message:
-      "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.",
+    title: "Erro interno",
+    message: "Ocorreu um erro interno no servidor.",
   });
 });
 

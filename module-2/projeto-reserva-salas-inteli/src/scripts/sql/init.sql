@@ -1,3 +1,8 @@
+-- ---------- LIMPEZA INICIAL ----------
+-- Remove tipos ENUM existentes
+DROP TYPE IF EXISTS user_role CASCADE;
+DROP TYPE IF EXISTS booking_status CASCADE;
+
 -- ---------- TIPOS ENUM ----------
 -- Funções do usuário no sistema
 CREATE TYPE user_role AS ENUM ('student', 'teacher', 'admin');
@@ -13,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     email                VARCHAR(100)     NOT NULL UNIQUE,-- E‑mail único
     password             VARCHAR(255)     NOT NULL,       -- Hash da senha
     registration_number  VARCHAR(20),                     -- Matrícula (opcional)
-    role                 user_role        NOT NULL DEFAULT 'student', -- Papel
+    role                 VARCHAR(20)      NOT NULL DEFAULT 'student', -- Papel
     created_at           TIMESTAMP        NOT NULL DEFAULT NOW(),     -- Data de criação
     updated_at           TIMESTAMP        NOT NULL DEFAULT NOW()      -- Última atualização
 );
@@ -47,7 +52,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     room_id      INT           NOT NULL REFERENCES rooms(room_id),   -- Sala reservada
     start_time   TIMESTAMP     NOT NULL,                             -- Início
     end_time     TIMESTAMP     NOT NULL,                             -- Fim
-    status       booking_status NOT NULL DEFAULT 'reserved',         -- Status
+    status       VARCHAR(20)   NOT NULL DEFAULT 'reserved',         -- Status
     reason       TEXT,                                               -- Motivo da reserva
     created_at   TIMESTAMP     NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP     NOT NULL DEFAULT NOW(),
@@ -64,9 +69,43 @@ CREATE TABLE IF NOT EXISTS notifications (
     created_at      TIMESTAMP  NOT NULL DEFAULT NOW()
 );
 
+-- Sessões de usuário
+CREATE TABLE IF NOT EXISTS sessions (
+    sid     VARCHAR NOT NULL COLLATE "default",          -- ID da sessão
+    sess    JSON    NOT NULL,                            -- Dados da sessão
+    expire  TIMESTAMP(6) NOT NULL,                       -- Data de expiração
+    CONSTRAINT sessions_pkey PRIMARY KEY (sid)
+);
+
 -- ---------- ÍNDICES AUXILIARES ----------
 CREATE INDEX idx_rooms_room_type_id       ON rooms(room_type_id);
 CREATE INDEX idx_bookings_user_id         ON bookings(user_id);
 CREATE INDEX idx_bookings_room_id         ON bookings(room_id);
 CREATE INDEX idx_notifications_user_id    ON notifications(user_id);
 CREATE INDEX idx_notifications_booking_id ON notifications(booking_id);
+CREATE INDEX idx_sessions_expire          ON sessions(expire);
+
+-- Criar tipos de sala
+INSERT INTO room_types (type_name) VALUES
+('telefonica'),
+('estudos')
+ON CONFLICT (type_name) DO NOTHING;
+
+-- Criar salas
+INSERT INTO rooms (room_type_id, name, capacity, location, description, is_active) VALUES
+-- Salas telefônicas (2º andar)
+((SELECT room_type_id FROM room_types WHERE type_name = 'telefonica'), 'Telefonica 1', 1, '2º andar', 'Sala telefônica individual', true),
+((SELECT room_type_id FROM room_types WHERE type_name = 'telefonica'), 'Telefonica 2', 1, '2º andar', 'Sala telefônica individual', true),
+
+-- Salas de estudos (térreo)
+((SELECT room_type_id FROM room_types WHERE type_name = 'estudos'), 'Estudos 1', 6, 'Térreo', 'Sala de estudos em grupo', true),
+((SELECT room_type_id FROM room_types WHERE type_name = 'estudos'), 'Estudos 2', 6, 'Térreo', 'Sala de estudos em grupo', true),
+((SELECT room_type_id FROM room_types WHERE type_name = 'estudos'), 'Estudos 3', 6, 'Térreo', 'Sala de estudos em grupo', true),
+((SELECT room_type_id FROM room_types WHERE type_name = 'estudos'), 'Estudos 4', 6, 'Térreo', 'Sala de estudos em grupo', true),
+((SELECT room_type_id FROM room_types WHERE type_name = 'estudos'), 'Estudos 5', 6, 'Térreo', 'Sala de estudos em grupo', true),
+((SELECT room_type_id FROM room_types WHERE type_name = 'estudos'), 'Estudos 6', 6, 'Térreo', 'Sala de estudos em grupo', true),
+((SELECT room_type_id FROM room_types WHERE type_name = 'estudos'), 'Estudos 7', 6, 'Térreo', 'Sala de estudos em grupo', true),
+
+-- Sala de estudos (1º andar)
+((SELECT room_type_id FROM room_types WHERE type_name = 'estudos'), 'Estudos Individual', 2, '1º andar', 'Sala de estudos individual', true)
+ON CONFLICT (name) DO NOTHING;

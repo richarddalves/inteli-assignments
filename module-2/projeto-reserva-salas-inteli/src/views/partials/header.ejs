@@ -1,12 +1,40 @@
-<header class="main-header">
-  <nav class="nav-container">
-    <div class="logo">
-      <a href="/">Reserva de Salas</a>
-    </div>
-    <ul class="nav-links">
-      <li><a href="/">Início</a></li>
-      <li><a href="/documentacao">Documentação</a></li>
-      <li><a href="/status">Status</a></li>
-    </ul>
-  </nav>
-</header>
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reserva de Salas - Inteli</title>
+    <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="stylesheet" href="/styles/auth.css" />
+    <link rel="stylesheet" href="/styles/errors.css" />
+    <link rel="stylesheet" href="/styles/documentacao.css" />
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container header-container">
+        <div class="logo">
+          <img
+            src="/images/icone-inteli.svg"
+            alt="Ícone Inteli"
+            class="logo-icon"
+          />
+          <h1>Sistema de Reserva de Salas</h1>
+        </div>
+        <nav class="nav">
+          <ul class="nav-list">
+            <li><a href="/">Home</a></li>
+            <% if (typeof user !== 'undefined' && user) { %>
+            <li><a href="/reservas/minhas">Minhas Reservas</a></li>
+            <li><a href="/auth/logout">Sair</a></li>
+            <% } else { %>
+            <li><a href="/auth/login">Login</a></li>
+            <li><a href="/auth/registro">Registro</a></li>
+            <% } %>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main></main>
+  </body>
+</html>

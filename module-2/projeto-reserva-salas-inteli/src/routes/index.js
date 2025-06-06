@@ -2,18 +2,37 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
+const { isAuthenticated } = require("../controllers/authMiddleware");
+const reservaRepository = require("../repositories/ReservaRepository");
 
 // Importando as rotas
 const usuariosRoutes = require("./usuarios");
-const salasRoutes = require("./salas");
 const reservasRoutes = require("./reservas");
-const tiposSalaRoutes = require("./tipos-sala");
+const authRoutes = require("./auth");
 
 // Rota principal que serve a página inicial
-router.get("/", (req, res) => {
-  res.render("pages/index", {
-    title: "Sistema de Reserva de Salas",
-    message: "Bem-vindo ao Sistema de Reserva de Salas",
+router.get("/", async (req, res) => {
+  try {
+    const stats = await reservaRepository.getStats();
+    res.render("pages/index", {
+      title: "Início - Sistema de Reserva de Salas",
+      user: req.session.user || null,
+      stats,
+    });
+  } catch (error) {
+    console.error("Erro ao carregar página inicial:", error);
+    res.status(500).render("error", {
+      message: "Erro ao carregar página inicial",
+      error: error.message,
+    });
+  }
+});
+
+// Rota para o formulário de reserva
+router.get("/reservar/:roomId", isAuthenticated, (req, res) => {
+  res.render("pages/formulario-reserva", {
+    title: "Reservar Sala",
+    roomId: req.params.roomId,
   });
 });
 
@@ -49,10 +68,9 @@ router.get("/test-db", async (req, res) => {
 });
 
 // Registrando as rotas da API
-router.use("/usuarios", usuariosRoutes);
-router.use("/salas", salasRoutes);
-router.use("/reservas", reservasRoutes);
-router.use("/tipos-sala", tiposSalaRoutes);
+router.use("/usuarios", isAuthenticated, usuariosRoutes);
+router.use("/reservas", isAuthenticated, reservasRoutes);
+router.use("/auth", authRoutes);
 
 // Exportando o router como um middleware Express
 module.exports = router;

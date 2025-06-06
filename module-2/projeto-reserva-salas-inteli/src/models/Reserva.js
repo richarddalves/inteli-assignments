@@ -3,65 +3,22 @@ class Reserva {
   // Status válidos para uma reserva
   static STATUS = {
     RESERVED: "reserved",
-    APPROVED: "approved",
-    REJECTED: "rejected",
+    CONFIRMED: "confirmed",
     CANCELLED: "cancelled",
     COMPLETED: "completed",
-    RELEASED: "released",
   };
 
   // Construtor da classe Reserva
-  constructor(
-    booking_id,
-    room_id,
-    user_id,
-    start_time,
-    end_time,
-    status,
-    reason,
-    created_at,
-    updated_at
-  ) {
-    this.booking_id = booking_id;
-    this.room_id = room_id;
-    this.user_id = user_id;
-    this.start_time = start_time;
-    this.end_time = end_time;
-    this.status = status;
-    this.reason = reason;
-    this.created_at = created_at;
-    this.updated_at = updated_at;
-  }
-
-  // Método estático para criar uma instância de Reserva a partir de uma linha do banco
-  static fromDB(row) {
-    if (!row) return null;
-    return new Reserva(
-      row.booking_id,
-      row.room_id,
-      row.user_id,
-      row.start_time,
-      row.end_time,
-      row.status,
-      row.reason,
-      row.created_at,
-      row.updated_at
-    );
-  }
-
-  // Método para converter o objeto para JSON
-  toJSON() {
-    return {
-      booking_id: this.booking_id,
-      room_id: this.room_id,
-      user_id: this.user_id,
-      start_time: this.start_time,
-      end_time: this.end_time,
-      status: this.status,
-      reason: this.reason,
-      created_at: this.created_at,
-      updated_at: this.updated_at,
-    };
+  constructor(data) {
+    this.id = data.id;
+    this.user_id = data.user_id;
+    this.room_id = data.room_id;
+    this.start_time = data.start_time;
+    this.end_time = data.end_time;
+    this.status = data.status || Reserva.STATUS.RESERVED;
+    this.reason = data.reason;
+    this.created_at = data.created_at;
+    this.updated_at = data.updated_at;
   }
 
   // Valida se o status é válido
@@ -69,66 +26,39 @@ class Reserva {
     return Object.values(Reserva.STATUS).includes(status);
   }
 
-  // Valida se as datas são válidas
-  static validateDates(start_time, end_time) {
-    const start = new Date(start_time);
-    const end = new Date(end_time);
-    const now = new Date();
+  // Valida os dados da reserva
+  static validate(data) {
+    const errors = [];
 
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      throw new Error("Datas inválidas");
+    if (!data.user_id) {
+      errors.push("ID do usuário é obrigatório");
     }
 
-    if (start >= end) {
-      throw new Error("A data de início deve ser anterior à data de fim");
+    if (!data.room_id) {
+      errors.push("ID da sala é obrigatório");
     }
 
-    if (start < now) {
-      throw new Error("A data de início deve ser futura");
+    if (!data.start_time) {
+      errors.push("Horário de início é obrigatório");
     }
 
-    return true;
-  }
+    if (!data.end_time) {
+      errors.push("Horário de fim é obrigatório");
+    }
 
-  // Verifica se a reserva está ativa (não cancelada ou rejeitada)
-  isActive() {
-    return (
-      this.status !== Reserva.STATUS.CANCELLED &&
-      this.status !== Reserva.STATUS.REJECTED
-    );
-  }
+    if (
+      data.start_time &&
+      data.end_time &&
+      new Date(data.start_time) >= new Date(data.end_time)
+    ) {
+      errors.push("Horário de fim deve ser posterior ao horário de início");
+    }
 
-  // Verifica se a reserva está em andamento
-  isInProgress() {
-    const now = new Date();
-    const start = new Date(this.start_time);
-    const end = new Date(this.end_time);
-    return this.isActive() && now >= start && now <= end;
-  }
+    if (data.status && !Reserva.isValidStatus(data.status)) {
+      errors.push("Status inválido");
+    }
 
-  // Verifica se a reserva está pendente
-  isPending() {
-    return this.status === Reserva.STATUS.RESERVED;
-  }
-
-  // Verifica se a reserva está aprovada
-  isApproved() {
-    return this.status === Reserva.STATUS.APPROVED;
-  }
-
-  // Verifica se a reserva está concluída
-  isCompleted() {
-    return this.status === Reserva.STATUS.COMPLETED;
-  }
-
-  // Verifica se a reserva está cancelada
-  isCancelled() {
-    return this.status === Reserva.STATUS.CANCELLED;
-  }
-
-  // Verifica se a reserva está rejeitada
-  isRejected() {
-    return this.status === Reserva.STATUS.REJECTED;
+    return errors;
   }
 }
 

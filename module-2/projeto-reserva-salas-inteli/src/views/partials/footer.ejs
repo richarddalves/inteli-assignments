@@ -1,9 +1,33 @@
-<footer class="main-footer">
-  <div class="footer-content">
-    <p>
-      &copy; <%= new Date().getFullYear() %> Inteli - Instituto de Tecnologia e
-      Liderança
-    </p>
-    <p>Sistema de Reserva de Salas - Todos os direitos reservados</p>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <img
+          src="/images/inteli-logo.png"
+          alt="Inteli Logo"
+          class="footer-logo-img"
+        />
+      </div>
+      <div class="footer-links">
+        <a href="/documentacao">Documentação</a>
+        <a href="https://www.inteli.edu.br" target="_blank">Inteli</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>
+        &copy; <%= new Date().getFullYear() %> Inteli - Instituto de Tecnologia
+        e Liderança. Todos os direitos reservados.
+      </p>
+    </div>
   </div>
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget("https://vlibras.gov.br/app");
+  </script>
 </footer>

@@ -1,6 +1,5 @@
 // Controlador responsável pelas operações relacionadas às reservas
 const reservaRepository = require("../repositories/ReservaRepository");
-const salaRepository = require("../repositories/SalaRepository");
 
 class ReservaController {
   // Lista todas as reservas cadastradas
@@ -90,15 +89,6 @@ class ReservaController {
           .json({ error: "A data de início deve ser futura" });
       }
 
-      // Verificar se sala existe e está ativa
-      const sala = await salaRepository.findById(room_id);
-      if (!sala) {
-        return res.status(404).json({ error: "Sala não encontrada" });
-      }
-      if (!sala.is_active) {
-        return res.status(400).json({ error: "Sala está inativa" });
-      }
-
       // Verificar se usuário existe e está ativo
       const usuario =
         await require("../repositories/UsuarioRepository").findById(user_id);
@@ -110,7 +100,7 @@ class ReservaController {
       }
 
       // Verificar disponibilidade da sala
-      const disponivel = await salaRepository.checkDisponibilidade(
+      const disponivel = await reservaRepository.checkDisponibilidade(
         room_id,
         start_time,
         end_time
@@ -177,7 +167,7 @@ class ReservaController {
         (start_time && start_time !== reservaExistente.start_time) ||
         (end_time && end_time !== reservaExistente.end_time)
       ) {
-        const disponivel = await salaRepository.checkDisponibilidade(
+        const disponivel = await reservaRepository.checkDisponibilidade(
           reservaExistente.room_id,
           start_time || reservaExistente.start_time,
           end_time || reservaExistente.end_time,
@@ -252,20 +242,18 @@ class ReservaController {
         return res.status(404).json({ error: "Reserva não encontrada" });
       }
 
-      const reservaAtualizada = await reservaRepository.updateStatus(
-        booking_id,
-        status
-      );
+      const reservaAtualizada = await reservaRepository.update(booking_id, {
+        status,
+      });
 
       const obj = reservaAtualizada.toJSON
         ? reservaAtualizada.toJSON()
         : reservaAtualizada;
       res.json(obj);
     } catch (error) {
-      res.status(500).json({
-        error: "Erro ao atualizar status da reserva",
-        details: error.message,
-      });
+      res
+        .status(500)
+        .json({ error: "Erro ao atualizar status", details: error.message });
     }
   }
 
@@ -273,18 +261,132 @@ class ReservaController {
   async deletarReserva(req, res) {
     try {
       const booking_id = req.params.booking_id;
-      const reserva = await reservaRepository.findById(booking_id);
-      if (!reserva) {
+      const reservaExistente = await reservaRepository.findById(booking_id);
+      if (!reservaExistente) {
         return res.status(404).json({ error: "Reserva não encontrada" });
       }
+
       await reservaRepository.delete(booking_id);
-      res.status(200).json({ message: "Reserva excluída com sucesso" });
+      res.json({ message: "Reserva removida com sucesso" });
     } catch (error) {
       res
         .status(500)
-        .json({ error: "Erro ao excluir reserva", details: error.message });
+        .json({ error: "Erro ao deletar reserva", details: error.message });
+    }
+  }
+
+  // Lista as reservas do usuário logado
+  async minhasReservas(req, res) {
+    try {
+      const reservas = await reservaRepository.findByUsuario(
+        req.session.user.user_id
+      );
+      res.render("pages/minhas-reservas", {
+        title: "Minhas Reservas",
+        reservas: reservas.map((r) => (r.toJSON ? r.toJSON() : r)),
+        user: req.session.user,
+      });
+    } catch (error) {
+      res.status(500).render("error", {
+        message: "Erro ao buscar suas reservas",
+        error: error.message,
+      });
+    }
+  }
+
+  static async getReservasByUser(userId) {
+    try {
+      return await reservaRepository.findByUsuario(userId);
+    } catch (error) {
+      console.error("Erro ao buscar reservas do usuário:", error);
+      throw error;
+    }
+  }
+
+  static async createReserva(userId, roomId, startTime, endTime, reason) {
+    try {
+      console.log("Criando reserva:", {
+        userId,
+        roomId,
+        startTime,
+        endTime,
+        reason,
+      });
+
+      // Verificar se a sala está disponível
+      const hasConflict = await reservaRepository.checkTimeConflict(
+        roomId,
+        startTime,
+        endTime
+      );
+      console.log("Conflito de horário:", hasConflict);
+
+      if (hasConflict) {
+        throw new Error("Sala não está disponível no horário selecionado");
+      }
+
+      // Criar a reserva usando o método create do repositório
+      const reserva = await reservaRepository.create({
+        room_id: roomId,
+        user_id: userId,
+        start_time: startTime,
+        end_time: endTime,
+        reason: reason || null,
+      });
+
+      if (!reserva) {
+        throw new Error("Erro ao criar reserva no banco de dados");
+      }
+
+      console.log("Reserva criada:", reserva);
+      return reserva;
+    } catch (error) {
+      console.error("Erro ao criar reserva:", error);
+      throw error;
+    }
+  }
+
+  static async cancelReserva(bookingId) {
+    try {
+      return await reservaRepository.cancelReserva(bookingId);
+    } catch (error) {
+      console.error("Erro ao cancelar reserva:", error);
+      throw error;
+    }
+  }
+
+  static async checkRoomAvailability(startTime, endTime, roomId = null) {
+    try {
+      console.log("Verificando disponibilidade:", {
+        startTime,
+        endTime,
+        roomId,
+      });
+      const rooms = await reservaRepository.findAll();
+      console.log("Salas encontradas:", rooms);
+
+      const availability = {};
+      for (const room of rooms) {
+        const hasConflict = await reservaRepository.checkTimeConflict(
+          room.room_id,
+          startTime,
+          endTime
+        );
+        availability[room.room_id] = !hasConflict;
+      }
+
+      console.log("Disponibilidade:", availability);
+
+      if (roomId) {
+        return availability[roomId] || false;
+      }
+
+      return availability;
+    } catch (error) {
+      console.error("Erro ao verificar disponibilidade:", error);
+      throw error;
     }
   }
 }
 
-module.exports = new ReservaController();
+module.exports = ReservaController;
