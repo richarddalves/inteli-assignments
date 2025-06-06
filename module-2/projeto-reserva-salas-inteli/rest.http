@@ -1,144 +1,89 @@
-### Variáveis
 @baseUrl = http://localhost:3000
-@contentType = application/json
 
-### Testar conexão com o banco de dados
-GET {{baseUrl}}/test-db
-
-### Verificar status da API
-GET {{baseUrl}}/status
-
-### Criar usuário
-POST {{baseUrl}}/usuarios
-Content-Type: {{contentType}}
+### Autenticação
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
 
 {
-  "name": "Richard Alves",
-  "email": "richard.alves@example.com",
-  "password": "senha123",
-  "registration_number": "123456",
-  "role": "student"
+    "email": "usuario@exemplo.com",
+    "password": "senha123"
+}
+
+### Registro
+POST {{baseUrl}}/auth/registro
+Content-Type: application/json
+
+{
+    "name": "Novo Usuário",
+    "email": "novo@exemplo.com",
+    "password": "senha123",
+    "registration_number": "2024001",
+    "role": "student"
 }
 
 ### Listar usuários
 GET {{baseUrl}}/usuarios
 
-### Buscar usuário por ID
+### Buscar usuário
 GET {{baseUrl}}/usuarios/1
+
+### Criar usuário
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+
+{
+    "name": "João Silva",
+    "email": "joao.silva@sou.inteli.edu.br",
+    "password": "senha123",
+    "registration_number": "2024001",
+    "role": "student"
+}
 
 ### Atualizar usuário
 PUT {{baseUrl}}/usuarios/1
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
-  "name": "João Silva Atualizado",
-  "email": "richard.alves@example.edu",
-  "registration_number": "123456",
-  "role": "student"
+    "name": "João Silva Atualizado",
+    "email": "joao.silva@sou.inteli.edu.br",
+    "registration_number": "2024001",
+    "role": "student",
+    "is_active": true
 }
 
-### Deletar usuário
+### Excluir usuário
 DELETE {{baseUrl}}/usuarios/1
-
-### Criar tipo de sala
-POST {{baseUrl}}/tipos-sala
-Content-Type: {{contentType}}
-
-{
-  "type_name": "Sala de Aula",
-  "description": "Sala padrão para aulas"
-}
-
-### Listar tipos de sala
-GET {{baseUrl}}/tipos-sala
-
-### Buscar tipo de sala por ID
-GET {{baseUrl}}/tipos-sala/1
-
-### Atualizar tipo de sala
-PUT {{baseUrl}}/tipos-sala/1
-Content-Type: {{contentType}}
-
-{
-  "type_name": "Sala de Aula Atualizada",
-  "description": "Sala padrão para aulas atualizada"
-}
-
-### Deletar tipo de sala
-DELETE {{baseUrl}}/tipos-sala/1
-
-### Criar sala
-POST {{baseUrl}}/salas
-Content-Type: {{contentType}}
-
-{
-  "name": "Sala 10",
-  "capacity": 30,
-  "room_type_id": 1,
-  "location": "Bloco A",
-  "description": "Sala de aula padrão",
-  "is_active": true
-}
-
-### Listar salas
-GET {{baseUrl}}/salas
-
-### Buscar sala por ID
-GET {{baseUrl}}/salas/1
-
-### Buscar salas por tipo
-GET {{baseUrl}}/salas/tipo/1
-
-### Atualizar sala
-PUT {{baseUrl}}/salas/40
-Content-Type: {{contentType}}
-
-{
-  "name": "Sala 101 Atualizada",
-  "capacity": 35,
-  "room_type_id": 1,
-  "location": "Bloco A",
-  "description": "Sala de aula padrão atualizada",
-  "is_active": true
-}
-
-### Deletar sala
-DELETE {{baseUrl}}/salas/1
-
-### Criar reserva
-POST {{baseUrl}}/reservas
-Content-Type: {{contentType}}
-
-{
-  "user_id": 1,
-  "room_id": 1,
-  "start_time": "2026-03-20T10:00:00Z",
-  "end_time": "2026-03-20T12:00:00Z",
-  "reason": "Aula de Programação",
-  "status": "reserved"
-}
 
 ### Listar reservas
 GET {{baseUrl}}/reservas
 
-### Buscar reserva por ID
+### Buscar reserva
 GET {{baseUrl}}/reservas/1
 
-### Buscar reservas por usuário
-GET {{baseUrl}}/reservas/usuario/1
+### Criar reserva
+POST {{baseUrl}}/reservas
+Content-Type: application/json
+
+{
+    "room_id": 1,
+    "user_id": 1,
+    "start_time": "2026-03-20T10:00:00Z",
+    "end_time": "2026-03-20T12:00:00Z",
+    "reason": "Aula de Programação"
+}
 
 ### Atualizar reserva
 PUT {{baseUrl}}/reservas/1
-Content-Type: {{contentType}}
+Content-Type: application/json
 
 {
-  "user_id": 1,
-  "room_id": 1,
-  "start_time": "2026-03-20T14:00:00Z",
-  "end_time": "2026-03-20T16:00:00Z",
-  "reason": "Aula de Programação Atualizada",
-  "status": "approved"
+    "room_id": 1,
+    "user_id": 1,
+    "start_time": "2024-03-20T14:00:00Z",
+    "end_time": "2024-03-20T16:00:00Z",
+    "reason": "Aula de Programação Atualizada",
+    "status": "approved"
 }
 
-### Deletar reserva
+### Excluir reserva
 DELETE {{baseUrl}}/reservas/1
