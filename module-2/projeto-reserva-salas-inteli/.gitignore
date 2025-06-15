@@ -3,8 +3,7 @@ node_modules/
 package-lock.json        
 
 # Ambiente
-.env                     
-#.env.*                   
+.env               
 
 # Logs
 logs/
