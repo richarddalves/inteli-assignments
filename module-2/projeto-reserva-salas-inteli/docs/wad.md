@@ -11,7 +11,6 @@
 2. [Arquitetura do Sistema](#arquitetura-do-sistema)
    - [Estrutura do Projeto](#estrutura-do-projeto)
    - [Padrão MVC](#padrão-mvc)
-   - [Tecnologias Utilizadas](#tecnologias-utilizadas)
 3. [Banco de Dados](#banco-de-dados)
    - [Configuração PostgreSQL](#configuração-postgresql)
    - [Modelo de Dados](#modelo-de-dados)
@@ -25,10 +24,9 @@
    - [Componentes](#componentes)
    - [Interatividade](#interatividade)
 6. [Aspectos Técnicos](#aspectos-técnicos)
+   - [Decisões Técnicas](#decisões-técnicas)
    - [Segurança](#segurança)
    - [Performance](#performance)
-   - [Testes](#testes)
-   - [Monitoramento](#monitoramento)
 7. [Implantação e Manutenção](#implantação-e-manutenção)
    - [Deployment](#deployment)
    - [Manutenção](#manutenção)
@@ -100,14 +98,12 @@ reserva-salas/
 O sistema segue o padrão Model-View-Controller (MVC) com algumas adaptações para uma API RESTful e interface web:
 
 1. **Models** (`src/models/`)
-
    - Definem a estrutura dos dados
    - Implementam validações básicas
    - Fornecem métodos para serialização/deserialização
    - Classes: `Usuario`, `Sala`, `Reserva`, `TipoSala`
 
 2. **Controllers** (`src/controllers/`)
-
    - Implementam a lógica de negócio
    - Processam requisições HTTP
    - Validam dados de entrada
@@ -115,14 +111,12 @@ O sistema segue o padrão Model-View-Controller (MVC) com algumas adaptações p
    - Classes: `UsuarioController`, `SalaController`, `ReservaController`, `TipoSalaController`
 
 3. **Repositories** (`src/repositories/`)
-
    - Camada adicional para abstração do banco de dados
    - Implementam operações CRUD
    - Gerenciam queries SQL
    - Classes: `UsuarioRepository`, `SalaRepository`, `ReservaRepository`, `TipoSalaRepository`
 
 4. **Views** (`src/views/`)
-
    - Templates EJS para renderização do frontend
    - Componentes reutilizáveis
    - Páginas de erro personalizadas
@@ -133,15 +127,6 @@ O sistema segue o padrão Model-View-Controller (MVC) com algumas adaptações p
    - Mapeiam URLs para controllers
    - Implementam middleware quando necessário
    - Arquivos: `usuarios.js`, `salas.js`, `reservas.js`, `tipos-sala.js`, `index.js`
-
-### Tecnologias Utilizadas
-
-- **Backend**: Node.js, Express
-- **Frontend**: EJS, CSS3, JavaScript
-- **Banco de Dados**: PostgreSQL
-- **ORM**: pg (node-postgres)
-- **Testes**: Jest
-- **Documentação**: Markdown, OpenAPI (em desenvolvimento)
 
 ## Banco de Dados
 
@@ -159,8 +144,6 @@ DB_USER=seu_usuario
 DB_PASSWORD=sua_senha
 ```
 
-O sistema utiliza a biblioteca `pg` (node-postgres) para conexão com o banco de dados, que é compatível com qualquer instância PostgreSQL padrão. A única diferença entre usar Supabase ou uma instância local está na configuração das variáveis de ambiente.
-
 ### Modelo de Dados
 
 O modelo de dados do sistema pode ser visualizado através dos seguintes arquivos:
@@ -168,12 +151,9 @@ O modelo de dados do sistema pode ser visualizado através dos seguintes arquivo
 - **Modelo Interativo**: [`public/images/modelo-banco.svg`](../public/images/modelo-banco.svg) - Diagrama interativo em formato SVG
 - **Modelo em PDF**: [`public/files/modelo-banco.pdf`](../public/files/modelo-banco.pdf) - Versão em PDF
 
-![Modelo de Dados do Banco](../public/images/modelo-banco.svg)
-
 ### Estrutura das Tabelas
 
 1. **users**
-
    ```sql
    CREATE TABLE users (
      user_id SERIAL PRIMARY KEY,
@@ -189,7 +169,6 @@ O modelo de dados do sistema pode ser visualizado através dos seguintes arquivo
    ```
 
 2. **room_types**
-
    ```sql
    CREATE TABLE room_types (
      room_type_id SERIAL PRIMARY KEY,
@@ -202,7 +181,6 @@ O modelo de dados do sistema pode ser visualizado através dos seguintes arquivo
    ```
 
 3. **rooms**
-
    ```sql
    CREATE TABLE rooms (
      room_id SERIAL PRIMARY KEY,
@@ -237,7 +215,6 @@ O modelo de dados do sistema pode ser visualizado através dos seguintes arquivo
 ### Endpoints
 
 #### Usuários
-
 - `GET /usuarios` - Lista todos os usuários
 - `GET /usuarios/:user_id` - Busca usuário por ID
 - `POST /usuarios` - Cria novo usuário
@@ -245,7 +222,6 @@ O modelo de dados do sistema pode ser visualizado através dos seguintes arquivo
 - `DELETE /usuarios/:user_id` - Remove usuário
 
 #### Tipos de Sala
-
 - `GET /tipos-sala` - Lista todos os tipos de sala
 - `GET /tipos-sala/:room_type_id` - Busca tipo de sala por ID
 - `POST /tipos-sala` - Cria novo tipo de sala
@@ -253,224 +229,171 @@ O modelo de dados do sistema pode ser visualizado através dos seguintes arquivo
 - `DELETE /tipos-sala/:room_type_id` - Remove tipo de sala
 
 #### Salas
-
 - `GET /salas` - Lista todas as salas
 - `GET /salas/:room_id` - Busca sala por ID
-- `GET /salas/tipo/:room_type_id` - Busca salas por tipo
 - `POST /salas` - Cria nova sala
 - `PUT /salas/:room_id` - Atualiza sala
 - `DELETE /salas/:room_id` - Remove sala
 
 #### Reservas
-
 - `GET /reservas` - Lista todas as reservas
 - `GET /reservas/:booking_id` - Busca reserva por ID
-- `GET /reservas/usuario/:user_id` - Busca reservas por usuário
-- `GET /reservas/sala/:room_id` - Busca reservas por sala
 - `POST /reservas` - Cria nova reserva
 - `PUT /reservas/:booking_id` - Atualiza reserva
-- `PATCH /reservas/:booking_id/status` - Atualiza status da reserva
 - `DELETE /reservas/:booking_id` - Remove reserva
 
 ### Modelos de Dados
 
-#### Usuário
-
-```javascript
-{
-  id: number,
-  name: string,
-  email: string,
-  password: string,
-  registration_number: string,
-  role: string,
-  is_active: boolean,
-  created_at: Date,
-  updated_at: Date
-}
-```
-
-#### Sala
-
-```javascript
-{
-  id: number,
-  name: string,
-  room_type_id: number,
-  floor: number,
-  building: string,
-  is_active: boolean,
-  created_at: Date,
-  updated_at: Date
-}
-```
-
-#### Reserva
-
-```javascript
-{
-  id: number,
-  user_id: number,
-  room_id: number,
-  start_time: Date,
-  end_time: Date,
-  purpose: string,
-  status: string,
-  created_at: Date,
-  updated_at: Date
-}
-```
+Os modelos de dados da API seguem a estrutura das tabelas do banco de dados, com adição de validações e métodos específicos para serialização/deserialização.
 
 ### Regras de Negócio
 
 1. **Reservas**
-
    - Duração mínima: 15 minutos
    - Duração máxima: 2 horas
-   - Não permitir sobreposição de reservas para a mesma sala
-   - Status possíveis: reserved, approved, rejected, cancelled, completed, released
+   - Verificação de conflitos de horário
+   - Status possíveis: reservada, aprovada, rejeitada, cancelada, concluída, liberada
 
 2. **Usuários**
-
-   - Email deve ser institucional (@inteli.edu.br ou @sou.inteli.edu.br)
-   - Senha deve ser hasheada antes de armazenar
-   - Tipos: student, admin
+   - Autenticação via email institucional
+   - Níveis de acesso: estudante, administrador
+   - Validação de matrícula única
 
 3. **Salas**
-   - Tipos: sala de estudo, cabine
-   - Capacidade deve ser maior que zero
-   - Nome deve ser único
+   - Tipos: estudo, chamada
+   - Capacidade mínima: 1 pessoa
+   - Status de disponibilidade em tempo real
 
 ## Interface do Usuário
 
 ### Design Responsivo
 
-O sistema implementa um design responsivo que se adapta a diferentes tamanhos de tela:
-
-- Layout fluido que se ajusta a dispositivos móveis e desktop
-- Componentes flexíveis e adaptáveis
-- Tipografia responsiva
-- Imagens otimizadas para diferentes resoluções
+A interface foi desenvolvida com foco em responsividade e acessibilidade, utilizando:
+- CSS3 com Flexbox e Grid
+- Media queries para diferentes tamanhos de tela
+- Design mobile-first
+- Componentes reutilizáveis
 
 ### Componentes
 
 1. **Header**
-
-   - Logo e título do sistema
+   - Logo do Inteli
    - Menu de navegação
-   - Links de autenticação/usuário
+   - Perfil do usuário
 
 2. **Dashboard**
-
    - Estatísticas em tempo real
    - Gráficos de ocupação
    - Lista de reservas ativas
 
 3. **Formulários**
+   - Reserva de salas
+   - Cadastro de usuários
+   - Gerenciamento de salas
 
-   - Validação em tempo real
-   - Feedback visual
-   - Campos adaptados ao contexto
-
-4. **Cards de Sala**
-   - Status visual (disponível/reservada)
-   - Informações essenciais
-   - Ações contextuais
+4. **Notificações**
+   - Sistema de alertas
+   - Status de reservas
+   - Mensagens do sistema
 
 ### Interatividade
 
-- Atualizações em tempo real
-- Feedback visual para ações
+- Atualizações em tempo real via polling
+- Validação de formulários no cliente
+- Feedback visual de ações
 - Animações suaves
-- Notificações de status
+- Navegação intuitiva
 
 ## Aspectos Técnicos
 
+### Decisões Técnicas
+
+#### Frameworks e Tecnologias
+- **Backend**: Node.js com Express para a API RESTful
+- **Frontend**: EJS como template engine, com CSS3 e JavaScript vanilla
+- **Banco de Dados**: PostgreSQL com Supabase como serviço
+- **Arquitetura**: MVC adaptado para API RESTful, com camada adicional de Repositories
+
+#### Justificativas das Escolhas
+- Node.js e Express: Escolhidos pela simplicidade e performance para APIs RESTful
+- EJS: Selecionado por sua integração natural com Express e facilidade de uso
+- PostgreSQL: Escolhido pela robustez e suporte a relacionamentos complexos
+- MVC + Repositories: Implementado para separação clara de responsabilidades e manutenibilidade
+
 ### Segurança
-
-1. **Autenticação**
-
-   - Implementação futura de JWT
-   - Validação de email institucional
-   - Senhas hasheadas com bcrypt
-
-2. **Autorização**
-
-   - Controle de acesso baseado em tipo de usuário
-   - Validação de propriedade de recursos
-
-3. **Validação de Dados**
-
+- Validação de dados
    - Sanitização de inputs
-   - Validação de tipos e formatos
-   - Tratamento de erros consistente
-
-4. **Proteção da Aplicação**
-   - Conexão SSL com o banco de dados
-   - Proteção contra SQL Injection
-   - Headers de segurança configurados
+- Criptografia de senhas
 
 ### Performance
-
-- Pool de conexões com o banco de dados
-- Cache de consultas frequentes
-- Compressão de respostas
-- Logging de queries para otimização
-
-### Testes
-
-1. **Testes Unitários**
-
-   - Models
-   - Controllers
-   - Repositories
-
-2. **Testes de Integração**
-
-   - Endpoints da API
-   - Operações de banco de dados
-   - Fluxos completos de reserva
-
-3. **Testes de Carga**
-
-   - Verificação de disponibilidade
-   - Criação de reservas
-   - Listagem de recursos
-
-4. **Ferramentas**
-   - Testes unitários com Jest
-   - Testes de integração
-   - Testes de API com REST Client
-
-### Monitoramento
-
-- Logs de requisições
-- Logs de erros
-- Logs de queries
-- Métricas de performance
+- Otimização de queries
+- Índices no banco de dados
+- Minificação de assets
+- Lazy loading de imagens
+- Caching de dados estáticos
 
 ## Implantação e Manutenção
 
 ### Deployment
 
-1. Configurar variáveis de ambiente
-2. Instalar dependências
-3. Executar migrações do banco
-4. Iniciar o servidor
+O sistema pode ser implantado em qualquer ambiente que suporte Node.js e PostgreSQL:
+
+1. **Requisitos**
+   - Node.js v14+
+   - PostgreSQL v12+
+   - Variáveis de ambiente configuradas
+
+2. **Processo**
+   - Clone do repositório
+   - Instalação de dependências
+   - Configuração do banco
+   - Build do frontend
+   - Inicialização do servidor
 
 ### Manutenção
 
-- Logs de erros
-- Monitoramento de performance
+1. **Rotina**
 - Backup do banco de dados
-- Atualizações de segurança
+   - Monitoramento de logs
+   - Atualização de dependências
+   - Verificação de segurança
+
+2. **Procedimentos**
+   - Deploy de novas versões
+   - Rollback em caso de falha
+   - Manutenção do banco de dados
+   - Limpeza de logs
 
 ## Próximos Passos
 
-1. Implementar autenticação JWT
-2. Adicionar documentação OpenAPI/Swagger
-3. Implementar sistema de notificações
-4. Desenvolver interface web
-5. Adicionar testes automatizados
-6. Implementar cache para melhor performance
-7. Adicionar logs e monitoramento
+### O que Funcionou Bem
+- Arquitetura MVC com Repositories
+- Sistema de autenticação
+- API RESTful bem estruturada
+- Interface responsiva
+- Sistema de notificações
+- Testes automatizados
+
+### O que Pode Ser Melhorado
+- Implementação de WebSockets para atualizações em tempo real
+- Migração para um framework frontend moderno (React/Vue)
+- Adição de mais testes de integração
+- Implementação de cache para melhor performance
+- Melhorias na documentação da API com OpenAPI
+- Implementação de CI/CD
+
+### Aprendizados e Desafios
+
+#### Principais Aprendizados
+- Implementação de autenticação segura com JWT
+- Desenvolvimento de uma API RESTful completa
+- Gerenciamento de estados assíncronos no frontend
+- Integração com banco de dados PostgreSQL
+- Implementação de testes automatizados com Jest
+
+#### Desafios Superados
+- Sincronização em tempo real do status das salas
+- Validação de conflitos de horários nas reservas
+- Implementação de sistema de notificações
+- Otimização de queries do banco de dados
+- Desenvolvimento de interface responsiva e acessível

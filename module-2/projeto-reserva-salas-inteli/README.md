@@ -9,6 +9,8 @@
 
 Este é um sistema de reserva de salas desenvolvido para o Instituto de Tecnologia e Liderança (Inteli). O sistema permite que estudantes reservem salas de estudo e cabines para chamadas disponíveis no campus.
 
+**Link para vídeo explicativo:** https://youtu.be/32234ed
+
 ### Características principais:
 
 - Reservas de 15 minutos a 2 horas
@@ -88,9 +90,11 @@ O servidor estará disponível em `http://localhost:3000`
 
 Para executar os testes:
 
+<!--
 ```bash
 npm test
 ```
+-->
 
 Para testar os endpoints da API, utilize o arquivo `rest.http` com a extensão REST Client do VS Code.
 
@@ -100,7 +104,6 @@ Para testar os endpoints da API, utilize o arquivo `rest.http` com a extensão R
 - **Banco de Dados**: PostgreSQL
 - **Frontend**: EJS, CSS3, JavaScript
 - **Arquitetura**: MVC (Model-View-Controller)
-- **Testes**: Jest
 - **Documentação**: Markdown, OpenAPI (em desenvolvimento)
 
 ## Funcionalidades Principais
