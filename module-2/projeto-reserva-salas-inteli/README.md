@@ -9,7 +9,7 @@
 
 Este é um sistema de reserva de salas desenvolvido para o Instituto de Tecnologia e Liderança (Inteli). O sistema permite que estudantes reservem salas de estudo e cabines para chamadas disponíveis no campus.
 
-**Link para vídeo explicativo:** https://youtu.be/32234ed
+**Link para vídeo explicativo:** [https://youtu.be/8-n_9QrAo9k](https://youtu.be/8-n_9QrAo9k)
 
 ### Características principais:
 

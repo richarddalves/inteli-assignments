@@ -36,6 +36,8 @@
 
 O Sistema de Reserva de Salas do Inteli é uma aplicação web desenvolvida para atender às necessidades específicas da comunidade acadêmica do Instituto de Tecnologia e Liderança. O sistema permite que os estudantes reservem espaços de estudo no campus, que inclui salas de estudo e cabines para chamadas de vídeo.
 
+**Link para vídeo explicativo:** [https://youtu.be/8-n_9QrAo9k](https://youtu.be/8-n_9QrAo9k)
+
 ### Objetivos do Sistema
 
 - Facilitar o agendamento de salas de estudo e cabines para os estudantes
