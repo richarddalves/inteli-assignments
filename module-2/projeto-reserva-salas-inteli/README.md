@@ -26,6 +26,14 @@ Este é um sistema de reserva de salas desenvolvido para o Instituto de Tecnolog
 
 O Inteli possui um modelo de ensino 100% baseado em projetos, e os estudantes são livres para estudar em qualquer espaço do campus. Este sistema facilita o gerenciamento dos espaços compartilhados, garantindo que todos tenham acesso justo às salas de estudo e cabines para chamadas.
 
+| Página Inicial     | Login              |
+|--------------------|--------------------|
+| ![Print da página inicial](/public/images/pagina-inicial.png) | ![Print da página de login](/public/images/pagina-login.png) |
+
+| Minhas Reservas     | Nova Reserva       |
+|---------------------|--------------------|
+| ![Print da página de "Minhas Reservas"](/public/images/pagina-minhas-reservas.png) | ![Print da página "Nova Reserva"](/public/images/pagina-nova-reserva.png) |
+
 ## Como Executar o Projeto
 
 ### Pré-requisitos
