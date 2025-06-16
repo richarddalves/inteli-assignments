@@ -42,12 +42,50 @@ router.post("/login", async (req, res) => {
 
     // Remove a senha do objeto do usuário antes de salvar na sessão
     const { password, ...userWithoutPassword } = user;
+    
+    // Atualiza a sessão
     req.session.user = userWithoutPassword;
 
-    res.json({ message: "Login realizado com sucesso" });
+    // Força o salvamento da sessão e só então envia a resposta
+    req.session.save((err) => {
+      if (err) {
+        console.error("Erro ao salvar sessão:", err);
+        return res.status(500).json({ 
+          success: false,
+          message: "Erro ao fazer login" 
+        });
+      }
+      
+      /*// Log para debug
+      console.log('Login successful:', {
+        userId: userWithoutPassword.user_id,
+        email: userWithoutPassword.email,
+        sessionID: req.sessionID,
+        cookie: req.session.cookie
+      });*/
+
+      // Verifica se a sessão foi realmente salva
+      if (!req.session.user) {
+        console.error("Sessão não foi salva corretamente");
+        return res.status(500).json({ 
+          success: false,
+          message: "Erro ao salvar sessão" 
+        });
+      }
+      
+      // Envia a resposta com o usuário e um flag indicando sucesso
+      res.json({ 
+        success: true,
+        message: "Login realizado com sucesso",
+        user: userWithoutPassword
+      });
+    });
   } catch (error) {
     console.error("Erro ao fazer login:", error);
-    res.status(500).json({ message: "Erro ao fazer login" });
+    res.status(500).json({ 
+      success: false,
+      message: "Erro ao fazer login" 
+    });
   }
 });
 

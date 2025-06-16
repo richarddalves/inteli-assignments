@@ -37,34 +37,40 @@ app.use(
     store: new pgSession({
       pool: pool,
       tableName: "sessions",
+      createTableIfMissing: true,
+      pruneSessionInterval: 60, // Limpa sessões expiradas a cada 60 segundos
     }),
     secret: process.env.SESSION_SECRET || "sua-chave-secreta",
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: false, // Alterado para false em desenvolvimento
       maxAge: 24 * 60 * 60 * 1000, // 24 horas
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/'
     },
+    rolling: true
   })
 );
 
 // Middleware para disponibilizar dados do usuário em todas as views
 app.use((req, res, next) => {
+  // Garante que o objeto user está disponível em todas as views
   res.locals.user = req.session.user || null;
-  next();
-});
-
-// Middleware para tratamento de CORS
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  if (req.method === "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
-    return res.status(200).json({});
-  }
+  
+  // Adiciona um helper para verificar se o usuário está autenticado
+  res.locals.isAuthenticated = !!req.session.user;
+  
+  // Log para debug
+  console.log('Session state:', {
+    hasUser: !!req.session.user,
+    userId: req.session.user?.user_id,
+    path: req.path,
+    sessionID: req.sessionID,
+    cookie: req.session.cookie
+  });
+  
   next();
 });
 

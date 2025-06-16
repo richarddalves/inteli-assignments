@@ -80,20 +80,20 @@ router.post("/check-availability", isAuthenticated, async (req, res) => {
 // Rota para criar uma nova reserva
 router.post("/", isAuthenticated, async (req, res) => {
   try {
-    console.log("Recebendo requisição de criação de reserva");
-    console.log("Body:", req.body);
-    console.log("Session:", req.session);
+   // console.log("Recebendo requisição de criação de reserva");
+    //console.log("Body:", req.body);
+    //console.log("Session:", req.session);
 
     const { room_id, start_time, end_time, reason } = req.body;
     const userId = req.session.user.user_id;
 
-    console.log("Dados da reserva:", {
+    /*console.log("Dados da reserva:", {
       userId,
       room_id,
       start_time,
       end_time,
       reason,
-    });
+    });*/
 
     if (!userId) {
       console.log("Usuário não autenticado");
@@ -107,7 +107,7 @@ router.post("/", isAuthenticated, async (req, res) => {
         .json({ message: "Dados incompletos para criar a reserva" });
     }
 
-    console.log("Chamando ReservaController.createReserva");
+    //console.log("Chamando ReservaController.createReserva");
     const result = await ReservaController.createReserva(
       userId,
       room_id,
@@ -116,7 +116,7 @@ router.post("/", isAuthenticated, async (req, res) => {
       reason
     );
 
-    console.log("Resultado da criação:", result);
+    //console.log("Resultado da criação:", result);
 
     if (!result) {
       console.log("Erro: resultado vazio");

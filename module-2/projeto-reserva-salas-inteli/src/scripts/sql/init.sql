@@ -69,13 +69,15 @@ CREATE TABLE IF NOT EXISTS notifications (
     created_at      TIMESTAMP  NOT NULL DEFAULT NOW()
 );
 
--- Sessões de usuário
-CREATE TABLE IF NOT EXISTS sessions (
-    sid     VARCHAR NOT NULL COLLATE "default",          -- ID da sessão
-    sess    JSON    NOT NULL,                            -- Dados da sessão
-    expire  TIMESTAMP(6) NOT NULL,                       -- Data de expiração
-    CONSTRAINT sessions_pkey PRIMARY KEY (sid)
+-- Tabela para armazenar as sessões
+CREATE TABLE IF NOT EXISTS "sessions" (
+  "sid" varchar NOT NULL COLLATE "default",
+  "sess" json NOT NULL,
+  "expire" timestamp(6) NOT NULL,
+  CONSTRAINT "sessions_pkey" PRIMARY KEY ("sid")
 );
+
+CREATE INDEX IF NOT EXISTS "IDX_sessions_expire" ON "sessions" ("expire");
 
 -- ---------- ÍNDICES AUXILIARES ----------
 CREATE INDEX idx_rooms_room_type_id       ON rooms(room_type_id);
@@ -83,7 +85,6 @@ CREATE INDEX idx_bookings_user_id         ON bookings(user_id);
 CREATE INDEX idx_bookings_room_id         ON bookings(room_id);
 CREATE INDEX idx_notifications_user_id    ON notifications(user_id);
 CREATE INDEX idx_notifications_booking_id ON notifications(booking_id);
-CREATE INDEX idx_sessions_expire          ON sessions(expire);
 
 -- Criar tipos de sala
 INSERT INTO room_types (type_name) VALUES

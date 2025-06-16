@@ -52,13 +52,19 @@
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({ email, senha }),
+              credentials: 'include'
             });
 
-            if (response.ok) {
-              window.location.href = "/";
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+              // Aguarda um pequeno delay para garantir que a sessão foi salva
+              setTimeout(() => {
+                // Força um reload completo da página para garantir que a sessão seja carregada
+                window.location.reload(true);
+              }, 100);
             } else {
-              const error = await response.json();
-              alert(`Erro ao fazer login: ${error.message}`);
+              alert(`Erro ao fazer login: ${data.message}`);
             }
           } catch (error) {
             console.error("Erro ao fazer login:", error);
