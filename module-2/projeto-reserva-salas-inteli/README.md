@@ -28,11 +28,11 @@ O Inteli possui um modelo de ensino 100% baseado em projetos, e os estudantes s�
 
 | Página Inicial     | Login              |
 |--------------------|--------------------|
-| ![Print da página inicial](/public/images/pagina-inicial.png) | ![Print da página de login](/public/images/pagina-login.png) |
+| ![Print da página inicial](./public/images/pagina-inicial.png) | ![Print da página de login](./public/images/pagina-login.png) |
 
 | Minhas Reservas     | Nova Reserva       |
 |---------------------|--------------------|
-| ![Print da página de "Minhas Reservas"](/public/images/pagina-minhas-reservas.png) | ![Print da página "Nova Reserva"](/public/images/pagina-nova-reserva.png) |
+| ![Print da página de "Minhas Reservas"](./public/images/pagina-minhas-reservas.png) | ![Print da página "Nova Reserva"](./public/images/pagina-nova-reserva.png) |
 
 ## Como Executar o Projeto
 
