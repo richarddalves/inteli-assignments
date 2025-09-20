@@ -12,20 +12,16 @@ def draw_plot():
     plt.scatter(df["Year"], df["CSIRO Adjusted Sea Level"], alpha=0.5)
 
     # Create first line of best fit
-    # Usar todos os dados para calcular a linha de regressão
     res = linregress(df["Year"], df["CSIRO Adjusted Sea Level"])
 
-    # Criar array de anos de 1880 até 2050 para plotar a linha
     years_extended = pd.Series(range(1880, 2051))
     line1 = res.slope * years_extended + res.intercept
     plt.plot(years_extended, line1, "r", label="Fit: all data")
 
     # Create second line of best fit
-    # Filtrar dados a partir do ano 2000
     df_2000 = df[df["Year"] >= 2000]
     res2 = linregress(df_2000["Year"], df_2000["CSIRO Adjusted Sea Level"])
 
-    # Criar array de anos de 2000 até 2050 para a segunda linha
     years_2000 = pd.Series(range(2000, 2051))
     line2 = res2.slope * years_2000 + res2.intercept
     plt.plot(years_2000, line2, "g", label="Fit: 2000-present")
