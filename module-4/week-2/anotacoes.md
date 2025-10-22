@@ -1,0 +1,1 @@
+[Circuito no tinkercad: https://www.tinkercad.com/things/5NNqOndBcva-ponderadaweek2?sharecode=_TvCJlwUtU4c8ARyn-FkJ44GYbsQq63KzXSR-mE5rEo](https://www.tinkercad.com/things/5NNqOndBcva-ponderadaweek2?sharecode=_TvCJlwUtU4c8ARyn-FkJ44GYbsQq63KzXSR-mE5rEo)
