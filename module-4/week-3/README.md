@@ -31,7 +31,7 @@ Sistema de semáforo automático que alterna entre três estados com durações 
 5. Cronômetro visível comprovando os tempos corretos
 Faça upload no YouTube como não listado e cole o link abaixo -->
 
-[▶️ Assistir demonstração](URL_DO_VIDEO_AQUI)
+[▶️ Assistir demonstração](./assets/video.mp4)
 
 ### Simulação Online
 

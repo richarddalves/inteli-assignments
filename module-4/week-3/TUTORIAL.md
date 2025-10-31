@@ -8,7 +8,7 @@ Este tutorial mostra como conectar três LEDs com resistores e um display LCD ao
 
 <!-- INSTRUÇÕES: Foto da montagem completa de cima, com boa iluminação -->
 
-![Montagem completa](assets/montagem-completa.jpg)
+![Montagem completa](assets/montagem-completa.jpeg)
 
 ---
 
@@ -27,8 +27,8 @@ Encaixe o ESP32 no centro da protoboard. Os pinos de cada lado devem ficar em tr
 ## Passo 2: Conectar Alimentação
 
 Conecte dois jumpers criando os barramentos de alimentação:
-- Jumper vermelho: pino 3V3 do ESP32 → barramento positivo
-- Jumper preto: pino GND do ESP32 → barramento negativo
+- Jumper vermelho: pino 3V3 do ESP32 -> barramento positivo
+- Jumper preto: pino GND do ESP32 -> barramento negativo
 
 <!-- INSTRUÇÕES: Foto mostrando os dois jumpers de alimentação -->
 
@@ -43,8 +43,8 @@ Conecte dois jumpers criando os barramentos de alimentação:
 Posicione os três LEDs verticalmente na protoboard, de cima para baixo: vermelho, amarelo, verde. Conecte cada LED a um resistor de 220Ω.
 
 **Atenção à polaridade:**
-- Perna longa = anodo (positivo) → conecta ao resistor
-- Perna curta = catodo (negativo) → conecta ao GND
+- Perna longa = anodo (positivo) -> conecta ao resistor
+- Perna curta = catodo (negativo) -> conecta ao GND
 
 <!-- INSTRUÇÕES: Foto dos três LEDs com resistores posicionados -->
 
@@ -57,9 +57,9 @@ Posicione os três LEDs verticalmente na protoboard, de cima para baixo: vermelh
 ## Passo 4: Conectar LEDs ao ESP32
 
 Conecte cada resistor ao pino GPIO correspondente:
-- LED Vermelho → GPIO 13
-- LED Amarelo → GPIO 12
-- LED Verde → GPIO 14
+- LED Vermelho -> GPIO 13
+- LED Amarelo -> GPIO 12
+- LED Verde -> GPIO 14
 
 Conecte todos os catodos (perna curta) dos LEDs ao barramento GND.
 
@@ -74,10 +74,10 @@ Conecte todos os catodos (perna curta) dos LEDs ao barramento GND.
 ## Passo 5: Conectar Display LCD
 
 Conecte os quatro pinos do display LCD:
-- VCC → barramento positivo
-- GND → barramento negativo
-- SDA → GPIO 21
-- SCL → GPIO 22
+- VCC -> barramento positivo
+- GND -> barramento negativo
+- SDA -> GPIO 21
+- SCL -> GPIO 22
 
 <!-- INSTRUÇÕES: Foto do display LCD conectado -->
 
@@ -113,13 +113,13 @@ Antes de ligar, verifique:
 
 | Componente | Pino do Componente | Conecta a |
 |---|---|---|
-| LED Vermelho | Anodo (longa) | Resistor 220Ω → GPIO 13 |
+| LED Vermelho | Anodo (longa) | Resistor 220Ω -> GPIO 13 |
 | LED Vermelho | Catodo (curta) | Barramento GND |
 | | | |
-| LED Amarelo | Anodo (longa) | Resistor 220Ω → GPIO 12 |
+| LED Amarelo | Anodo (longa) | Resistor 220Ω -> GPIO 12 |
 | LED Amarelo | Catodo (curta) | Barramento GND |
 | | | |
-| LED Verde | Anodo (longa) | Resistor 220Ω → GPIO 14 |
+| LED Verde | Anodo (longa) | Resistor 220Ω -> GPIO 14 |
 | LED Verde | Catodo (curta) | Barramento GND |
 | | | |
 | Display LCD | VCC | Barramento 3V3 |
@@ -135,7 +135,7 @@ Antes de ligar, verifique:
 ## Testando
 
 Após carregar o código, observe:
-- Ciclo correto: vermelho (6s) → verde (4s) → amarelo (2s)
+- Ciclo correto: vermelho (6s) -> verde (4s) -> amarelo (2s)
 - Display mostrando mensagens e contagem regressiva
 - Apenas um LED aceso por vez
 

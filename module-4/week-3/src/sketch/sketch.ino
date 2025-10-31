@@ -115,7 +115,9 @@ String obterMensagemEstado(EstadoSemaforo estado) {
 void mudarParaProximoEstado(LuzSemaforo& luzAtual, LuzSemaforo& proximaLuz, EstadoSemaforo proximoEstado) {
   luzAtual.desligar();
   estadoAtual = proximoEstado;
+
   proximaLuz.ligar();
   momentoInicio = millis();
+  
   ultimoSegundoMostrado = -1;
 }
