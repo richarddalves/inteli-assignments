@@ -27,6 +27,7 @@ int ultimoSegundoMostrado;
 void setup() {
   // Inicialização do display LCD
   lcd.init();
+  lcd.backlight();
   
   // Inicialização de todas as luzes do semáforo
   luzVerde.init();

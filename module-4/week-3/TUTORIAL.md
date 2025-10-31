@@ -6,17 +6,13 @@ Guia passo a passo para montagem física do circuito na protoboard.
 
 Este tutorial mostra como conectar três LEDs com resistores e um display LCD ao ESP32, criando um sistema de semáforo funcional.
 
-<!-- INSTRUÇÕES: Foto da montagem completa de cima, com boa iluminação -->
-
 ![Montagem completa](assets/montagem-completa.jpeg)
 
 ---
 
 ## Passo 1: Posicionar o ESP32
 
-Encaixe o ESP32 no centro da protoboard. Os pinos de cada lado devem ficar em trilhas diferentes para evitar curto-circuito.
-
-<!-- INSTRUÇÕES: Foto do ESP32 sozinho na protoboard -->
+Encaixe o ESP32 na protoboard. Os pinos de cada lado devem ficar em trilhas diferentes para evitar curto-circuito.
 
 ![ESP32 na protoboard](assets/etapa1-esp32.jpg)
 
@@ -30,8 +26,6 @@ Conecte dois jumpers criando os barramentos de alimentação:
 - Jumper vermelho: pino 3V3 do ESP32 -> barramento positivo
 - Jumper preto: pino GND do ESP32 -> barramento negativo
 
-<!-- INSTRUÇÕES: Foto mostrando os dois jumpers de alimentação -->
-
 ![Alimentação](assets/etapa2-alimentacao.jpg)
 
 **Por que assim?** Os barramentos facilitam distribuir energia para todos os componentes sem precisar voltar sempre ao ESP32.
@@ -40,13 +34,11 @@ Conecte dois jumpers criando os barramentos de alimentação:
 
 ## Passo 3: Posicionar LEDs e Resistores
 
-Posicione os três LEDs verticalmente na protoboard, de cima para baixo: vermelho, amarelo, verde. Conecte cada LED a um resistor de 220Ω.
+Posicione os três LEDs verticalmente na protoboard ou na sua modelagem, de cima para baixo: vermelho, amarelo, verde. Conecte cada LED a um resistor de 220Ω.
 
 **Atenção à polaridade:**
 - Perna longa = anodo (positivo) -> conecta ao resistor
 - Perna curta = catodo (negativo) -> conecta ao GND
-
-<!-- INSTRUÇÕES: Foto dos três LEDs com resistores posicionados -->
 
 ![LEDs e resistores](assets/etapa3-leds-resistores.jpg)
 
@@ -63,8 +55,6 @@ Conecte cada resistor ao pino GPIO correspondente:
 
 Conecte todos os catodos (perna curta) dos LEDs ao barramento GND.
 
-<!-- INSTRUÇÕES: Foto mostrando todos os jumpers conectados -->
-
 ![Conexões dos LEDs](assets/etapa4-conexoes-leds.jpg)
 
 **Por que assim?** Usar jumpers de cores correspondentes aos LEDs facilita identificar e corrigir conexões caso necessário.
@@ -78,8 +68,6 @@ Conecte os quatro pinos do display LCD:
 - GND -> barramento negativo
 - SDA -> GPIO 21
 - SCL -> GPIO 22
-
-<!-- INSTRUÇÕES: Foto do display LCD conectado -->
 
 ![Display LCD](assets/etapa5-lcd.jpg)
 
@@ -95,19 +83,9 @@ Antes de ligar, verifique:
 - Todas as conexões firmemente encaixadas
 - Sem fios soltos ou curtos-circuitos
 
-<!-- INSTRUÇÕES: Foto em close dos barramentos mostrando organização -->
-
-![Verificação](assets/etapa6-verificacao.jpg)
-
 **Por que assim?** Verificar antes de energizar evita danos aos componentes e ao computador.
 
 ---
-
-## Diagrama de Conexões
-
-<!-- INSTRUÇÕES: Diagrama esquemático desenhado ou digital mostrando todas as conexões com números dos pinos -->
-
-![Diagrama esquemático](assets/diagrama-esquematico.png)
 
 ## Tabela de Conexões
 
@@ -139,9 +117,12 @@ Após carregar o código, observe:
 - Display mostrando mensagens e contagem regressiva
 - Apenas um LED aceso por vez
 
-<!-- INSTRUÇÕES: Foto do semáforo funcionando, com LED aceso e display mostrando informação -->
+| Cor       | Montagem funcionando                       |
+|------------|--------------------------------------------|
+| Vermelho  | ![Funcionando vermelho](assets/montagem-funcionando-vermelho.jpg) |
+| Amarelo   | ![Funcionando amarelo](assets/montagem-funcionando-amarelo.jpg)   |
+| Verde     | ![Funcionando verde](assets/montagem-funcionando-verde.jpg)       |
 
-![Funcionando](assets/montagem-funcionando.jpg)
 
 ### Problemas Comuns
 

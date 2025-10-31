@@ -23,15 +23,7 @@ Sistema de semáforo automático que alterna entre três estados com durações 
 
 ### Vídeo
 
-<!-- INSTRUÇÕES: Grave um vídeo de 1-2 minutos mostrando:
-1. Você aparecendo no início do vídeo (para comprovar autoria)
-2. A protoboard montada com todos os componentes visíveis
-3. O semáforo funcionando por pelo menos dois ciclos completos
-4. O display LCD mostrando as mensagens e contagem regressiva
-5. Cronômetro visível comprovando os tempos corretos
-Faça upload no YouTube como não listado e cole o link abaixo -->
-
-[▶️ Assistir demonstração](./assets/video.mp4)
+[▶️ Assistir demonstração](https://youtube.com/shorts/mvcjTvBlNMc?feature=share)
 
 ### Simulação Online
 
@@ -87,12 +79,13 @@ semaforo/
 ├── TUTORIAL.md          
 ├── assets/              
 ├── src/
-│   ├── sketch.ino
-│   ├── LuzSemaforo.h
-│   ├── LuzSemaforo.cpp
-│   ├── config.h
-│   ├── diagram.json
-│   └── libraries.txt
+├─── sketch/
+│    ├── sketch.ino
+│    ├── LuzSemaforo.h
+│    ├── LuzSemaforo.cpp
+│    ├── config.h
+│    ├── diagram.json
+│    └── libraries.txt
 └── doc/
     └── documentacao.md
 ```
@@ -101,13 +94,11 @@ semaforo/
 
 Esta atividade foi avaliada por dois colegas de turma.
 
-<!-- INSTRUÇÕES: Após receber as avaliações, preencha abaixo -->
+### **Avaliador 1:** Victor Grycajuk <br>
+> O Richard documentou muito bem o sistema desenvolvido com POO e referencias (copias dos enderecos das variáveis). Além de montar o sistema fisico, também montou no Wokwi.
 
-**Avaliador 1:** [NOME_COMPLETO]  
-Comentários: [COMENTARIOS]
-
-**Avaliador 2:** [NOME_COMPLETO]  
-Comentários: [COMENTARIOS]
+### **Avaliador 2:** Isaac Souza <br>
+> O código funcionou perfeitamente e seu circuito está bem claro, usou Ponteiro brevemente, no caso seu endereço de memória. Então acredito que cumpriu todos os requisitos.
 
 ## Autor
 
