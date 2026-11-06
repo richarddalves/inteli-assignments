@@ -18,7 +18,13 @@ produtor_terminou = threading.Event()
 
 
 def produzir():
-    """Gera IDs de 0 a TOTAL-1. Não recebe parâmetros nem retorna valor."""
+    """Produz IDs no buffer sem proteger o contador compartilhado.
+
+    Parâmetros: nenhum.
+    Retorno: nenhum.
+    Funcionamento: gera IDs de 0 a TOTAL - 1 e cede a CPU entre a leitura
+    e a escrita de ocupadas para expor a condição de corrida.
+    """
     global fim, ocupadas, produzidas
     for identificador in range(TOTAL):
         while ocupadas >= N:
@@ -37,7 +43,13 @@ def produzir():
 
 
 def consumir():
-    """Sem parâmetros. Lê até a produção acabar ou passar 1 s sem item. Retorna se travou."""
+    """Consome os itens que o contador compartilhado indica como disponíveis.
+
+    Parâmetros: nenhum.
+    Retorno: True se passar um segundo sem leitura, False se a produção acabar.
+    Funcionamento: retira IDs do buffer circular sem sincronização e registra
+    cada ID lido em recebidas.
+    """
     global inicio, ocupadas
     ultima_leitura = time.monotonic()
     while True:
@@ -61,7 +73,13 @@ def consumir():
 
 
 def main():
-    """Executa o ensaio e imprime contagens. Não recebe nem retorna valores."""
+    """Executa a versão com corrida e apresenta o resultado do ensaio.
+
+    Parâmetros: nenhum.
+    Retorno: nenhum.
+    Funcionamento: inicia o produtor, consome os itens e compara os IDs
+    produzidos com os recebidos para contar perdas e duplicações.
+    """
     produtor = threading.Thread(target=produzir, daemon=True)
     produtor.start()
     travou = consumir()

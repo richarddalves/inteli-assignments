@@ -18,7 +18,13 @@ mutex = threading.Semaphore(1)
 
 
 def produzir():
-    """Gera TOTAL IDs no buffer. Não recebe parâmetros nem retorna valor."""
+    """Produz IDs respeitando a capacidade do buffer circular.
+
+    Parâmetros: nenhum.
+    Retorno: nenhum.
+    Funcionamento: gera TOTAL IDs. Para cada item, espera uma vaga, adquire
+    o mutex, escreve, libera o mutex e sinaliza um item cheio.
+    """
     global fim, produzidas
     for identificador in range(TOTAL):
         vazio.acquire()
@@ -31,7 +37,13 @@ def produzir():
 
 
 def consumir():
-    """Sem parâmetros. Retira TOTAL IDs. Retorna True se ficar 1 s sem item."""
+    """Consome os IDs com a mesma ordem segura de sincronização.
+
+    Parâmetros: nenhum.
+    Retorno: True se uma espera exceder um segundo, False após TOTAL leituras.
+    Funcionamento: espera um item cheio antes de adquirir o mutex, retira o
+    ID, libera a região crítica e sinaliza a vaga vazia.
+    """
     global inicio
     for _ in range(TOTAL):
         if not cheio.acquire(timeout=1):
@@ -47,7 +59,13 @@ def consumir():
 
 
 def main():
-    """Executa o ensaio e imprime contagens. Não recebe nem retorna valores."""
+    """Executa a versão sincronizada e apresenta o resultado do ensaio.
+
+    Parâmetros: nenhum.
+    Retorno: nenhum.
+    Funcionamento: inicia o produtor, aguarda o buffer encher, consome os
+    itens e compara os IDs produzidos com os recebidos.
+    """
     produtor = threading.Thread(target=produzir, daemon=True)
     produtor.start()
     time.sleep(0.02)  # Começa o consumo com o buffer cheio.

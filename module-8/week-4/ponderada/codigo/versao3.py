@@ -18,7 +18,13 @@ mutex = threading.Semaphore(1)
 
 
 def produzir():
-    """Sem parâmetros. Tenta gerar TOTAL IDs com a ordem invertida. Não retorna valor."""
+    """Produz IDs com a ordem de aquisição que provoca o travamento.
+
+    Parâmetros: nenhum.
+    Retorno: nenhum enquanto a thread está bloqueada. Se terminar, retorna None.
+    Funcionamento: adquire o mutex antes de esperar uma vaga. Com o buffer
+    cheio, segura o mutex e impede o consumidor de liberar uma vaga.
+    """
     global fim, produzidas
     for identificador in range(TOTAL):
         mutex.acquire()  # Ordem invertida: pode bloquear segurando mutex.
@@ -31,7 +37,13 @@ def produzir():
 
 
 def consumir():
-    """Sem parâmetros. Retira TOTAL IDs. Retorna True se ficar 1 s sem item."""
+    """Tenta consumir os IDs enquanto o produtor pode segurar o mutex.
+
+    Parâmetros: nenhum.
+    Retorno: True se uma espera exceder um segundo, False após TOTAL leituras.
+    Funcionamento: espera um item cheio, tenta obter o mutex com limite de
+    tempo e registra cada ID que conseguir retirar do buffer.
+    """
     global inicio
     for _ in range(TOTAL):
         if not cheio.acquire(timeout=1):
@@ -47,7 +59,13 @@ def consumir():
 
 
 def main():
-    """Executa o ensaio e imprime contagens. Não recebe nem retorna valores."""
+    """Executa a versão travada e apresenta o resultado do ensaio.
+
+    Parâmetros: nenhum.
+    Retorno: nenhum.
+    Funcionamento: inicia o produtor, aguarda o buffer encher, tenta
+    consumir e compara os IDs produzidos com os recebidos.
+    """
     produtor = threading.Thread(target=produzir, daemon=True)
     produtor.start()
     time.sleep(0.02)  # Mesmo início de consumo usado na versão 2.

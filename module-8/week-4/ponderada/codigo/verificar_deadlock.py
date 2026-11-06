@@ -18,7 +18,14 @@ ORDEM_GLOBAL = (
 
 
 def sucessores(estado, programas):
-    """Recebe estado e programas. Retorna os próximos estados e ações possíveis."""
+    """Gera todas as transições P/V habilitadas no estado atual.
+
+    Parâmetros: estado contém (contadores de programa, donos dos recursos),
+    com -1 para recurso livre. programas contém as operações de cada thread.
+    Retorno: lista de pares (novo estado, descrição da ação executada).
+    Funcionamento: tenta avançar uma operação por thread. Uma aquisição P
+    só avança com recurso livre e uma liberação V exige o dono correto.
+    """
     pcs, donos = estado
     proximos = []
     for numero, programa in enumerate(programas):
@@ -41,7 +48,13 @@ def sucessores(estado, programas):
 
 
 def reconstruir(estado, pais):
-    """Recebe o estado final e o mapa de pais. Retorna o caminho mais curto."""
+    """Reconstrói a sequência mínima de ações até um estado encontrado.
+
+    Parâmetros: estado é o destino e pais mapeia cada estado para o estado
+    anterior e a ação usada pela busca em largura.
+    Retorno: lista de descrições das ações, em ordem de execução.
+    Funcionamento: segue os predecessores até o início e inverte a lista.
+    """
     caminho = []
     while pais[estado] is not None:
         anterior, acao = pais[estado]
@@ -51,7 +64,14 @@ def reconstruir(estado, pais):
 
 
 def esperas(estado, programas):
-    """Recebe estado e programas. Retorna as esperas por recurso no deadlock."""
+    """Descreve quem espera cada recurso em um estado travado.
+
+    Parâmetros: estado contém (contadores de programa, donos dos recursos)
+    e programas contém as operações P/V das threads.
+    Retorno: lista de frases com a thread bloqueada, o recurso e seu dono.
+    Funcionamento: examina a próxima operação de cada thread não concluída
+    e exige que ela seja uma aquisição P bloqueada.
+    """
     pcs, donos = estado
     linhas = []
     for numero, programa in enumerate(programas):
@@ -66,7 +86,15 @@ def esperas(estado, programas):
 
 
 def explorar(programas):
-    """Recebe programas P/V. Retorna total de estados, deadlocks e menor exemplo."""
+    """Explora todos os estados alcançáveis dos programas P/V.
+
+    Parâmetros: programas contém uma sequência de operações para cada uma
+    das três threads.
+    Retorno: tupla (estados, deadlocks, finais, exemplo). Exemplo contém o
+    menor caminho até um travamento e as esperas, ou None se não houver.
+    Funcionamento: percorre o espaço de estados em largura, conta estados
+    finais e sem transições e reconstrói o primeiro deadlock encontrado.
+    """
     inicial = ((0, 0, 0), (-1, -1, -1))
     fila = deque([inicial])
     pais = {inicial: None}
@@ -92,7 +120,14 @@ def explorar(programas):
 
 
 def mostrar(nome, programas):
-    """Recebe nome e programas. Imprime a exploração e não retorna valor."""
+    """Imprime os resultados da exploração de um modelo P/V.
+
+    Parâmetros: nome rotula o modelo e programas contém as operações das
+    três threads.
+    Retorno: nenhum.
+    Funcionamento: chama explorar e, quando houver deadlock, mostra a
+    sequência mínima de ações e os recursos aguardados.
+    """
     estados, travamentos, completos, exemplo = explorar(programas)
     print(f"{nome}: estados={estados}, deadlocks={travamentos}, finais={completos}")
     if exemplo:
@@ -105,7 +140,13 @@ def mostrar(nome, programas):
 
 
 def main():
-    """Executa os dois modelos. Não recebe parâmetros nem retorna valor."""
+    """Compara o modelo original com a correção por ordem global.
+
+    Parâmetros: nenhum.
+    Retorno: nenhum.
+    Funcionamento: explora e imprime os dois modelos, seguido do escopo
+    da verificação, que cobre P/V e exclusão mútua.
+    """
     mostrar("Código original", ORIGINAL)
     mostrar("Ordem global i2c < log < ble", ORDEM_GLOBAL)
     print("Escopo: P/V e exclusão mútua. O modelo não mede tempo nem E/S.")

@@ -10,7 +10,13 @@ PERIODO_US = 10_000
 
 
 def ler_csv(caminho):
-    """Recebe um caminho CSV. Produz linhas (id, sensor_us, motor_us) uma a uma."""
+    """Lê uma captura CSV sem carregar o arquivo inteiro na memória.
+
+    Parâmetros: caminho é um Path para o CSV da captura.
+    Retorno: iterador de tuplas (id, sensor_us, motor_us), com inteiros.
+    Funcionamento: exige as três colunas, converte os valores para inteiros
+    não negativos e informa a linha quando encontra um dado inválido.
+    """
     with caminho.open(newline="", encoding="utf-8") as arquivo:
         leitor = csv.DictReader(arquivo)
         campos = {"id", "sensor_us", "motor_us"}
@@ -27,7 +33,16 @@ def ler_csv(caminho):
 
 
 def avaliar(linhas, esperadas, tolerancia_periodo_us=None):
-    """Percorre linhas uma vez. Retorna métricas e aprovação para o total esperado."""
+    """Avalia prazo, integridade e ordem de uma captura do sensor ao motor.
+
+    Parâmetros: linhas contém tuplas (id, sensor_us, motor_us), esperadas é
+    a quantidade planejada de IDs a partir de zero e tolerancia_periodo_us
+    é o maior desvio permitido dos 10.000 µs entre amostras consecutivas.
+    Retorno: dicionário com contagens, pior latência, exemplos de falhas e
+    aprovado, que só é True quando todas as regras exigidas passam.
+    Funcionamento: percorre as linhas uma vez, marca os IDs vistos e calcula
+    as falhas de prazo, sequência e período. Depois conta os IDs ausentes.
+    """
     if esperadas <= 0:
         raise ValueError("O total esperado precisa ser positivo")
     if tolerancia_periodo_us is not None and tolerancia_periodo_us < 0:
@@ -95,7 +110,14 @@ def avaliar(linhas, esperadas, tolerancia_periodo_us=None):
 
 
 def mostrar(nome, resultado):
-    """Recebe nome e métricas. Imprime o relatório e não retorna valor."""
+    """Mostra no terminal as métricas de uma captura avaliada.
+
+    Parâmetros: nome identifica a captura e resultado é o dicionário
+    produzido por avaliar.
+    Retorno: nenhum.
+    Funcionamento: imprime a aprovação, as contagens de falhas e a pior
+    latência observada.
+    """
     print(f"{nome}: {'APROVADO' if resultado['aprovado'] else 'REPROVADO'}")
     print(f"  linhas={resultado['linhas']}, esperadas={resultado['esperadas']}")
     print(
@@ -115,7 +137,13 @@ def mostrar(nome, resultado):
 
 
 def demonstrar():
-    """Cria casos sintéticos em memória. Retorna 0 se o validador os classificar bem."""
+    """Exercita o validador com dois exemplos sintéticos.
+
+    Parâmetros: nenhum.
+    Retorno: 0 se a captura boa passar e a defeituosa falhar, 1 caso contrário.
+    Funcionamento: cria uma sequência dentro do prazo e outra com atraso,
+    perda e duplicação, avalia ambas e imprime os resultados.
+    """
     boas = [(i, i * PERIODO_US, i * PERIODO_US + 4_200) for i in range(8)]
     ruins = [linha for linha in boas if linha[0] != 5]
     ruins = [
@@ -133,7 +161,14 @@ def demonstrar():
 
 
 def main():
-    """Lê argumentos e CSV ou executa a demonstração. Retorna código de saída."""
+    """Processa a linha de comando do validador de prazo.
+
+    Parâmetros: nenhum em Python. Lê CSV, --esperadas, tolerância e --demo
+    dos argumentos do processo.
+    Retorno: código 0 para captura aprovada e 1 para captura reprovada.
+    Funcionamento: executa a demonstração ou lê o CSV, avalia a captura e
+    imprime o relatório. Argumentos inválidos geram erro do argparse.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("csv", nargs="?", type=Path, help="captura com id,sensor_us,motor_us")
     parser.add_argument("--esperadas", type=int, help="número planejado de IDs a partir de zero")
