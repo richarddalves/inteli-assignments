@@ -17,3 +17,5 @@ python3 ponderada/codigo/versao3.py
 ```
 
 Cada comando tenta trabalhar com 20.000 amostras e N = 4. A versão 1 força uma troca de thread entre a leitura e a escrita do contador. A versão 3 força o caso em que o produtor segura `mutex` enquanto espera `vazio`. Por isso ela encerra a observação após 1 segundo sem consumo, embora as threads continuem bloqueadas até o processo sair.
+
+Para repetir as nove rodadas da tabela, execute cada comando três vezes. Os resultados da versão 1 dependem da ordem em que o sistema alterna as threads e podem variar. O [print completo](ponderada/img/a4-nove-execucoes.png) guarda as rodadas usadas na entrega.

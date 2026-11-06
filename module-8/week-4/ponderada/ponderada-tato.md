@@ -102,6 +102,8 @@ Os programas estão em [`codigo/versao1.py`](codigo/versao1.py), [`codigo/versao
 | 3 | 2 | 4 | 0 | 4 | 0 | Sim |
 | 3 | 3 | 4 | 0 | 4 | 0 | Sim |
 
+O [print das nove execuções](img/a4-nove-execucoes.png) permite conferir cada linha da tabela.
+
 Na versão 3, 20.000 era a meta da chamada, mas o produtor bloqueou após colocar só quatro itens. Os outros 19.996 IDs nem chegaram a ser produzidos. A coluna de perdas conta apenas os quatro IDs já gerados e ainda não entregues.
 
 **Versão 1.** A região crítica reúne o teste de `ocupadas`, a escrita ou leitura na posição do anel, a atualização de `inicio` ou `fim` e a mudança do contador. O `sleep(0)` entre ler e escrever `ocupadas` permite que duas threads usem o mesmo valor antigo. Uma atualização some, o contador deixa de representar o buffer e uma posição pode ser lida duas vezes ou sobrescrita antes do consumo. A GIL do Python não protege essa sequência inteira.
@@ -139,12 +141,22 @@ O ciclo completo é sensor → log → thread_log → ble → thread_config → 
 
 **Detecção e recuperação.** Coloco limite de espera nos segundos `P`. Se o sensor não pegar `log` em até 0,2 ms, ele solta `i2c`, registra a falha para envio posterior e segue com a vibração da amostra. As outras threads também soltam o que já seguram ao expirar seu prazo e tentam de novo, fora do caminho crítico. Isso quebra a posse e espera no caso observado. Para a pessoa, um registro ou comando pode atrasar ou se perder, mas a vibração não deve esperar pelo log. É preciso medir também quanto tempo a configuração segura `i2c`, pois esse tempo entra no limite real de 5 ms.
 
+### Fechamento técnico: o prazo de ponta a ponta
+
+A conta de CPU da A1, o buffer da A4 e os locks da A5 precisam caber no **mesmo** prazo. Na H com DSP, o orçamento restante é 5,000 - 3,575 = **1,425 ms** para ler o sensor, atualizar o motor, atender interrupções e esperar recursos. Uma espera de 1,500 ms pelo log levaria a amostra a pelo menos 3,575 + 1,500 = **5,075 ms**, mesmo com o filtro acelerado. O buffer estar correto quanto aos dados não basta para cumprir o prazo.
+
+A versão 2 da A4 protege os dados, mas seu produtor espera em `vazio` sem limite. Se o consumidor parar logo depois de esvaziar o buffer de quatro posições, chegam amostras em t = 0, 10, 20 e 30 ms. A quinta, em t = 40 ms, encontra o buffer cheio e bloqueia. Esse comportamento é aceitável para demonstrar semáforos, porém impediria a pulseira de cumprir o prazo. No produto, uma falha do consumidor tem de ser detectada dentro do prazo e informada à pessoa, sem deixar o sensor preso nessa espera.
+
+Por isso, o caminho da vibração deve seguir direto de sensor → filtro DSP → motor. O log vai para uma fila de capacidade limitada por uma tentativa sem espera. Quando ela encher, o firmware conta a perda do registro e continua a vibração. Comandos BLE entram apenas em pontos em que a duração de acesso ao `i2c` esteja limitada e medida. Um temporizador de supervisão verifica a conclusão de cada amostra. Ao detectar um atraso, ele tenta comandar um padrão de vibração de erro distinto do aviso de obstáculo. Essa resposta depende de o motor ainda funcionar e precisaria ser validada com usuários.
+
+No protótipo físico, eu marcaria com GPIO o instante em que a amostra fica disponível e o instante em que o motor é atualizado. Um analisador lógico mediria a diferença enquanto a pulseira recebe comandos BLE, envia logs e enche a fila. O ensaio de 1.000.000 de amostras a 100 Hz dura 1.000.000 / 100 = **10.000 s = 2 h 46 min 40 s**. O critério de liberação é máximo observado ≤ 5,000 ms, zero IDs perdidos ou duplicados no caminho sensor → motor e zero travamentos. Um ensaio finito não prova todos os futuros casos, por isso também verificaria os entrelaçamentos críticos da A4 e da A5 de forma dirigida.
+
 ## Parte B: a decisão do CTO
 
 **Memorando ao conselho da Tato | Dilema 2: processador de produção**
 
 Escolho a Plataforma H com DSP para a pulseira de produção. No cálculo da A1 ela processa a amostra em 3,575 ms, com 1,425 ms de folga para o prazo de 5 ms. A H sem DSP leva 6,875 ms. A V leva 2,0423 ms em condições médias, mas alcança 5,0423 ms quando ocorre a interrupção de 3 ms prevista no enunciado. Para quem caminha usando a pulseira, o caso lento é o que decide.
 
-Essa escolha custa R$ 37 por unidade, R$ 15 a mais que a H básica. Ainda fica R$ 33 abaixo da V. Aceito também a atualização de firmware por cabo. A empresa pagará pela estrutura de assistência e pela logística de recolher pulseiras quando uma falha precisar de correção. A pessoa usuária pode ficar mais tempo com uma versão antiga até ser atendida. Por isso, cada lote precisa sair com firmware versionado, testes de regressão e um procedimento claro de atualização em assistência.
+Essa escolha custa R$ 37 por unidade, R$ 15 a mais que a H básica. Ainda fica R$ 33 abaixo da V. Em um lote de 2.000 unidades, a diferença de hardware seria 2.000 × R$ 33 = **R$ 66.000**. Aceito também a atualização de firmware por cabo. A empresa pagará pela estrutura de assistência e pela logística de recolher pulseiras quando uma falha precisar de correção. Se esse atendimento custar mais de R$ 33 por pulseira ao longo da vida útil, a economia de hardware desaparece. A pessoa usuária pode ficar mais tempo com uma versão antiga até ser atendida. Por isso, cada lote precisa sair com firmware versionado, testes de regressão e um procedimento claro de atualização em assistência.
 
 Sem Linux e sem atualização pela internet, há menos componentes expostos remotamente, mas BLE continua recebendo dados externos e exige validação de comandos. Os 1,425 ms são uma estimativa calculada. Ainda falta medir a pulseira pronta. Antes de liberar o lote, vou medir do instante da amostra até o início da vibração, incluindo leitura do sensor, interrupções e concorrência com BLE. Se qualquer amostra passar de **5,000 ms** no ensaio de pior caso, suspendo esta escolha até corrigir o firmware ou trocar a plataforma. Esse é o fato que me faria voltar ao conselho com outra decisão.
