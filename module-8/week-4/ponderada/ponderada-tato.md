@@ -88,13 +88,13 @@ A thread do sensor passa a maior parte do tempo em **espera** pelo próximo per�
 
 ### A4. Buffer circular e semáforos
 
-Os programas estão em [`codigo/versao1.py`](codigo/versao1.py), [`codigo/versao2.py`](codigo/versao2.py) e [`codigo/versao3.py`](codigo/versao3.py). Cada execução pediu 20.000 IDs, de 0 a 19.999, com N = 4. Chamei de **perdida** cada amostra produzida cujo ID não apareceu no consumo. **Duplicada** conta cada recebimento além da primeira ocorrência do mesmo ID. Assim, na primeira execução da versão 1, houve 20.000 - 4.472 = 15.528 IDs distintos recebidos e 21.652 - 15.528 = 6.124 leituras repetidas. `Travou` significa 1 segundo sem novo consumo.
+Os programas estão em [`codigo/versao1.py`](codigo/versao1.py), [`codigo/versao2.py`](codigo/versao2.py) e [`codigo/versao3.py`](codigo/versao3.py). Cada execução pediu 20.000 IDs, de 0 a 19.999, com N = 4. Chamei de **perdida** cada amostra produzida cujo ID não apareceu no consumo. **Duplicada** conta cada recebimento além da primeira ocorrência do mesmo ID. Assim, na primeira execução da versão 1, houve 20.000 - 4.698 = 15.302 IDs distintos recebidos e 20.722 - 15.302 = 5.420 leituras repetidas. `Travou` significa 1 segundo sem novo consumo.
 
 | Versão | Execução | Produzidas | Consumidas | Perdidas | Duplicadas | Travou? |
 |:---:|:---:|---:|---:|---:|---:|:---:|
-| 1 | 1 | 20.000 | 21.652 | 4.472 | 6.124 | Não |
-| 1 | 2 | 20.000 | 22.205 | 4.357 | 6.562 | Não |
-| 1 | 3 | 20.000 | 21.473 | 3.687 | 5.160 | Não |
+| 1 | 1 | 20.000 | 20.722 | 4.698 | 5.420 | Não |
+| 1 | 2 | 20.000 | 21.005 | 4.012 | 5.017 | Não |
+| 1 | 3 | 20.000 | 21.775 | 3.877 | 5.652 | Não |
 | 2 | 1 | 20.000 | 20.000 | 0 | 0 | Não |
 | 2 | 2 | 20.000 | 20.000 | 0 | 0 | Não |
 | 2 | 3 | 20.000 | 20.000 | 0 | 0 | Não |
@@ -110,7 +110,7 @@ Na versão 3, 20.000 era a meta da chamada, mas o produtor bloqueou após coloca
 
 **Versão 2.** `vazio` começa em 4 e reserva espaço antes de produzir. `cheio` começa em 0 e impede consumo antes de haver item. `mutex` começa em 1 e deixa só uma thread alterar o anel e seus índices por vez. O produtor espera `vazio` antes de entrar no `mutex`. O consumidor espera `cheio` antes de entrar no `mutex`. Assim ninguém segura o acesso ao anel enquanto aguarda a outra thread liberar uma vaga ou entregar um item.
 
-**Versão 3.** Fixei o entrelaçamento após as quatro primeiras produções para reproduzir o caso perigoso. O produtor segura `mutex` e espera `vazio`, que vale zero. O consumidor já tem item em `cheio`, mas precisa do `mutex` para retirá-lo e devolver uma vaga. Os dois ficam à espera um do outro. Os prints abaixo mostram a primeira execução de cada versão. Como a versão 1 depende do escalonamento, seus números podem mudar numa nova rodada.
+**Versão 3.** Atrasei o início do consumidor em 20 ms nas versões 2 e 3, para começar o consumo com o buffer cheio nas duas. A única mudança na lógica do produtor da versão 3 é a ordem dos dois `wait`: ele segura `mutex` e espera `vazio`, que vale zero. O consumidor já tem item em `cheio`, mas precisa do `mutex` para retirá-lo e devolver uma vaga. Os dois ficam à espera um do outro. Os prints abaixo mostram a primeira execução de cada versão. Como a versão 1 depende do escalonamento, seus números podem mudar numa nova rodada.
 
 ![Execução da versão 1](img/a4-versao1.png)
 

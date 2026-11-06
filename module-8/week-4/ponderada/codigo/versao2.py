@@ -2,6 +2,7 @@
 
 from collections import Counter
 import threading
+import time
 
 
 N = 4
@@ -30,12 +31,13 @@ def produzir():
 
 
 def consumir():
-    """Retira TOTAL IDs do buffer. Retorna True se ficar 1 s sem novo item."""
+    """Sem parâmetros. Retira TOTAL IDs. Retorna True se ficar 1 s sem item."""
     global inicio
     for _ in range(TOTAL):
         if not cheio.acquire(timeout=1):
             return True
-        mutex.acquire()
+        if not mutex.acquire(timeout=1):
+            return True
         identificador = buffer[inicio]
         inicio = (inicio + 1) % N
         mutex.release()
@@ -46,8 +48,9 @@ def consumir():
 
 def main():
     """Executa o ensaio e imprime contagens. Não recebe nem retorna valores."""
-    produtor = threading.Thread(target=produzir)
+    produtor = threading.Thread(target=produzir, daemon=True)
     produtor.start()
+    time.sleep(0.02)  # Começa o consumo com o buffer cheio.
     travou = consumir()
     produtor.join(timeout=1)
     contagens = Counter(recebidas)

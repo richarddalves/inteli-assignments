@@ -37,7 +37,7 @@ def produzir():
 
 
 def consumir():
-    """Lê até a produção acabar ou passar 1 s sem item. Retorna se travou."""
+    """Sem parâmetros. Lê até a produção acabar ou passar 1 s sem item. Retorna se travou."""
     global inicio, ocupadas
     ultima_leitura = time.monotonic()
     while True:

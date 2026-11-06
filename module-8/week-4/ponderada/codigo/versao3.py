@@ -2,6 +2,7 @@
 
 from collections import Counter
 import threading
+import time
 
 
 N = 4
@@ -14,16 +15,13 @@ recebidas = []
 vazio = threading.Semaphore(N)
 cheio = threading.Semaphore(0)
 mutex = threading.Semaphore(1)
-buffer_cheio = threading.Event()
 
 
 def produzir():
-    """Tenta gerar TOTAL IDs, prendendo mutex antes de esperar vazio."""
+    """Sem parâmetros. Tenta gerar TOTAL IDs com a ordem invertida. Não retorna valor."""
     global fim, produzidas
     for identificador in range(TOTAL):
         mutex.acquire()  # Ordem invertida: pode bloquear segurando mutex.
-        if identificador == N:
-            buffer_cheio.set()  # Fixa o entrelaçamento para reproduzir o erro.
         vazio.acquire()
         buffer[fim] = identificador
         fim = (fim + 1) % N
@@ -33,9 +31,8 @@ def produzir():
 
 
 def consumir():
-    """Espera o buffer encher e retira IDs. Retorna True após 1 s sem item."""
+    """Sem parâmetros. Retira TOTAL IDs. Retorna True se ficar 1 s sem item."""
     global inicio
-    buffer_cheio.wait()
     for _ in range(TOTAL):
         if not cheio.acquire(timeout=1):
             return True
@@ -53,7 +50,9 @@ def main():
     """Executa o ensaio e imprime contagens. Não recebe nem retorna valores."""
     produtor = threading.Thread(target=produzir, daemon=True)
     produtor.start()
+    time.sleep(0.02)  # Mesmo início de consumo usado na versão 2.
     travou = consumir()
+    produtor.join(timeout=1)
     contagens = Counter(recebidas)
     unicos = sum(identificador in contagens for identificador in range(produzidas))
     duplicadas = sum(max(0, vezes - 1) for vezes in contagens.values())
