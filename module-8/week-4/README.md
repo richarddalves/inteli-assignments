@@ -1,0 +1,19 @@
+# Ponderada CC08: do pipeline ao deadlock
+
+Richard Dias Alves
+
+Análise de uma pulseira sensorial com prazo de 5 ms por amostra, simulação de semáforos e decisão de arquitetura.
+
+O texto da entrega está em [ponderada/ponderada-tato.md](ponderada/ponderada-tato.md). Os prints ficam em `ponderada/img`.
+
+## Rodar a questão A4
+
+Use Python 3. Não há dependências externas. A partir desta pasta, rode cada versão com um comando:
+
+```bash
+python3 ponderada/codigo/versao1.py
+python3 ponderada/codigo/versao2.py
+python3 ponderada/codigo/versao3.py
+```
+
+Cada comando tenta trabalhar com 20.000 amostras e N = 4. A versão 1 força uma troca de thread entre a leitura e a escrita do contador. A versão 3 força o caso em que o produtor segura `mutex` enquanto espera `vazio`. Por isso ela encerra a observação após 1 segundo sem consumo, embora as threads continuem bloqueadas até o processo sair.
