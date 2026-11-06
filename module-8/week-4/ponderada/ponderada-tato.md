@@ -141,15 +141,31 @@ O ciclo completo é sensor → log → thread_log → ble → thread_config → 
 
 **Detecção e recuperação.** Coloco limite de espera nos segundos `P`. Se o sensor não pegar `log` em até 0,2 ms, ele solta `i2c`, registra a falha para envio posterior e segue com a vibração da amostra. As outras threads também soltam o que já seguram ao expirar seu prazo e tentam de novo, fora do caminho crítico. Isso quebra a posse e espera no caso observado. Para a pessoa, um registro ou comando pode atrasar ou se perder, mas a vibração não deve esperar pelo log. É preciso medir também quanto tempo a configuração segura `i2c`, pois esse tempo entra no limite real de 5 ms.
 
+**Conferência das ordens de execução.** Além do grafo desenhado, modelei cada `P` e `V` em [`codigo/verificar_deadlock.py`](codigo/verificar_deadlock.py). O programa percorre todos os estados alcançáveis das três threads e dos três recursos. No código original encontrou **87 estados e um estado de deadlock**. O caminho mais curto começa com sensor adquirindo `i2c`, log adquirindo `log` e configuração adquirindo `ble`. Em seguida, cada thread espera o recurso da próxima. Ao trocar a ordem da configuração para `i2c` antes de `ble`, encontrou **72 estados e nenhum deadlock**. A prova vale para a ordem de locks modelada. Tempo de execução, I/O e duração das seções críticas ficam fora desse modelo.
+
+![Exploração dos estados de lock da A5](img/a5-exploracao.png)
+
 ### Fechamento técnico: o prazo de ponta a ponta
 
 A conta de CPU da A1, o buffer da A4 e os locks da A5 precisam caber no **mesmo** prazo. Na H com DSP, o orçamento restante é 5,000 - 3,575 = **1,425 ms** para ler o sensor, atualizar o motor, atender interrupções e esperar recursos. Uma espera de 1,500 ms pelo log levaria a amostra a pelo menos 3,575 + 1,500 = **5,075 ms**, mesmo com o filtro acelerado. O buffer estar correto quanto aos dados não basta para cumprir o prazo.
+
+Também há um limite para aceitar o DSP do fornecedor. Se a aceleração real do filtro for `s` e o restante do caminho consumir `E` ms, então `T = 6,875 × (0,40 + 0,60/s) + E`. Para cumprir o prazo, `s ≥ 0,60 / [(5 - E)/6,875 - 0,40]`. Com `E = 0`, bastaria `s ≥ 1,833`. Com `E = 1,000 ms`, a exigência sobe para `s ≥ 3,300`. Com `E = 1,425 ms`, são necessários os **5,000** prometidos. Eu cobraria essa aceleração no pior caso medido, junto com o tempo de leitura e comando do motor.
 
 A versão 2 da A4 protege os dados, mas seu produtor espera em `vazio` sem limite. Se o consumidor parar logo depois de esvaziar o buffer de quatro posições, chegam amostras em t = 0, 10, 20 e 30 ms. A quinta, em t = 40 ms, encontra o buffer cheio e bloqueia. Esse comportamento é aceitável para demonstrar semáforos, porém impediria a pulseira de cumprir o prazo. No produto, uma falha do consumidor tem de ser detectada dentro do prazo e informada à pessoa, sem deixar o sensor preso nessa espera.
 
 Por isso, o caminho da vibração deve seguir direto de sensor → filtro DSP → motor. O log vai para uma fila de capacidade limitada por uma tentativa sem espera. Quando ela encher, o firmware conta a perda do registro e continua a vibração. Comandos BLE entram apenas em pontos em que a duração de acesso ao `i2c` esteja limitada e medida. Um temporizador de supervisão verifica a conclusão de cada amostra. Ao detectar um atraso, ele tenta comandar um padrão de vibração de erro distinto do aviso de obstáculo. Essa resposta depende de o motor ainda funcionar e precisaria ser validada com usuários.
 
-No protótipo físico, eu marcaria com GPIO o instante em que a amostra fica disponível e o instante em que o motor é atualizado. Um analisador lógico mediria a diferença enquanto a pulseira recebe comandos BLE, envia logs e enche a fila. O ensaio de 1.000.000 de amostras a 100 Hz dura 1.000.000 / 100 = **10.000 s = 2 h 46 min 40 s**. O critério de liberação é máximo observado ≤ 5,000 ms, zero IDs perdidos ou duplicados no caminho sensor → motor e zero travamentos. Um ensaio finito não prova todos os futuros casos, por isso também verificaria os entrelaçamentos críticos da A4 e da A5 de forma dirigida.
+No protótipo físico, eu marcaria com GPIO o instante em que a amostra fica disponível e o instante em que o motor recebe o novo comando. Um analisador lógico mediria a diferença enquanto a pulseira recebe comandos BLE, envia logs e enche a fila. Cada marca precisa manter o ID da amostra, para uma saída ausente não deslocar o pareamento das próximas. O ensaio de 1.000.000 de amostras a 100 Hz dura 1.000.000 / 100 = **10.000 s = 2 h 46 min 40 s**. O critério de liberação é máximo observado ≤ 5,000 ms, zero IDs perdidos ou duplicados no caminho sensor → motor e zero travamentos. Um ensaio finito não prova todos os futuros casos, por isso também verificaria os entrelaçamentos críticos da A4 e da A5 de forma dirigida. O início físico da vibração também merece medição: o comando do motor pode anteceder a sensação na pele.
+
+Para tornar esse critério executável, fiz [`codigo/validar_prazo.py`](codigo/validar_prazo.py). Ele lê um CSV com `id,sensor_us,motor_us` e o total planejado de amostras. A análise verifica todos os IDs, duplicações, ordem temporal e latência de cada linha, com limite de **5.000 µs**. Também informa o maior desvio do período nominal de **10.000 µs**. Como o enunciado não fixa tolerância de jitter, esse desvio só reprova a captura quando uma tolerância é informada no comando. O programa lê o arquivo linha a linha e foi exercitado com **1.000.000 de linhas sintéticas**.
+
+O modo `--demo` deixa visível como o critério funciona: oito linhas sintéticas com pior latência de 4.200 µs são aprovadas. No segundo caso, o ID 2 demora 5.075 µs, o ID 5 falta e o ID 6 se repete. O resultado é reprovado. **Esses dados não são medições da pulseira.** O CSV de hardware ainda precisaria ser produzido no protótipo e analisado pelo mesmo comando.
+
+![Demonstração sintética do validador de prazo](img/validacao-prazo-demo.png)
+
+Também deixei [sete testes automáticos](codigo/test_verificacoes.py) para os dois programas, cobrindo o ciclo de deadlock, a correção, o limite exato de 5.000 µs, a primeira amostra atrasada em 5.001 µs, IDs ausentes ou repetidos, timestamps inválidos e a tolerância opcional do período. Todos passaram na execução registrada abaixo.
+
+![Execução dos sete testes dos verificadores](img/testes-verificacoes.png)
 
 ## Parte B: a decisão do CTO
 
